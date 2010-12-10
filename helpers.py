@@ -4,11 +4,9 @@ Various Helpers
 """
 
 import docutils.core
-import docutils.nodes
 import docutils.writers.html4css1
 from docutils.parsers.rst import directives, Directive
 
-import ConfigParser
 import datetime
 import os
 import pygments
@@ -35,6 +33,22 @@ class Pygments(Directive):
         formatter = HtmlFormatter(noclasses=True)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
+
+class InlinePygments(Directive):
+ 
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+    has_content = True
+
+    def run(self):
+        lexer = get_lexer_by_name(self.arguments[0])
+        code = u'\n'.join(self.content)
+        formatter = HtmlFormatter(noclasses=True)
+        parsed = pygments.highlight(code, lexer, formatter)
+        return [docutils.nodes.raw('', parsed, format='html')]
+
+
 
 
 class PyResult(Directive):

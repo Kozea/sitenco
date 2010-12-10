@@ -31,8 +31,8 @@ class Site(kraken.site.Site):
             {'project_name': LOCAL.project_name, 'helpers': helpers,
              'request': request})
 
-    
-for project in os.listdir(PROJECTS_PATH):
+for project in (project for project in os.listdir(PROJECTS_PATH)\
+        if not project.startswith('.')):
     config_path = os.path.join(PROJECTS_PATH, project, 'configuration')
     CONFIG[project] = json.load(open(config_path))
 
