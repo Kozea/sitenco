@@ -15,27 +15,27 @@ from pygments.formatters import HtmlFormatter
 import subprocess
 from xml.etree import ElementTree
 
-
 ROOT = os.path.dirname(__file__)
 
 
 class Pygments(Directive):
     """Python code syntax hightlighting."""
     required_arguments = 1
-    optional_arguments = 0
+    optional_arguments = 1
     final_argument_whitespace = True
     has_content = False
 
     def run(self):
         filename = os.path.join(ROOT, self.arguments[0])
+        lexer_name = self.arguments[1] if len(self.arguments) > 1 else 'python'
         code = open(filename).read()
-        lexer = get_lexer_by_name('python')
+        lexer = get_lexer_by_name(lexer_name)
         formatter = HtmlFormatter(noclasses=True)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
 class InlinePygments(Directive):
- 
+
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
@@ -47,6 +47,30 @@ class InlinePygments(Directive):
         formatter = HtmlFormatter(noclasses=True)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
+
+
+class UrlGet(Directive):
+
+    required_arguments = 2
+    optional_arguments = 0
+    has_content = False
+
+    def run(self):
+        filename = os.path.join(ROOT, self.arguments[0])
+        url = self.arguments[1]
+        parts =  filename.split('/')
+        cwd = '/'.join(parts[:-1])
+        filename = parts[-1]
+        pipe = subprocess.Popen(['python', filename, url],
+                cwd=cwd, stdout=subprocess.PIPE)
+        content = pipe.communicate()[0].strip()
+        retcode = pipe.poll()
+        if retcode:
+            content = 'An error occured'
+        content = '<iframe src="data:text/html;base64,%s">grou?</iframe>' % content.encode('base64')
+        return [docutils.nodes.raw('', content, format='html')]
+
+
 
 
 
@@ -69,7 +93,9 @@ class PyResult(Directive):
         return [docutils.nodes.raw('', content, format='html')]
 
 directives.register_directive('pycode', Pygments)
+directives.register_directive('code-block', InlinePygments)
 directives.register_directive('pyexec', PyResult)
+directives.register_directive('werkzeugurl', UrlGet)
 
 
 def rest_to_article(item, level=3):

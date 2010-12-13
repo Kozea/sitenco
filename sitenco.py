@@ -10,7 +10,6 @@ CONFIG = {}
 
 import controllers
 import helpers
-import kalamarsite
 from local import LOCAL
 
 
