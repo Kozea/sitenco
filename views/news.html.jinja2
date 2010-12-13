@@ -1,7 +1,7 @@
 {% extends "_layout.jinja2" %}
 
 {% block content %}
-<a id="rss" href="/rss/" title="RSS Feed">RSS Feed</a>
+<a id="rss" href="/rss" title="RSS Feed">RSS Feed</a>
 {% for datetime, items in news|groupby('datetime')|sort(True) %}
 <section>
 <h2>{{ helpers.pretty_datetime(datetime) }}</h2>
