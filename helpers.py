@@ -67,7 +67,10 @@ class UrlGet(Directive):
         retcode = pipe.poll()
         if retcode:
             content = 'An error occured'
-        content = '<iframe src="data:text/html;base64,%s">grou?</iframe>' % content.encode('base64')
+        content = '<iframe src="data:text/html;base64,%s">' \
+            'Request Output</iframe>' % content.encode('base64')
+        # Remove EOLs
+        content = content.replace('\n', '')
         return [docutils.nodes.raw('', content, format='html')]
 
 
