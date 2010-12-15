@@ -29,23 +29,23 @@ def _static(environ, filename, mimetype=None):
         wrapped_file, direct_passthrough=True, mimetype=mimetype)
 
 @expose('/static/<path:path>')
-def static(request, path, **kwargs):
+def static(request, path):
     """Static part of projects."""
     filename = os.path.join(PROJECTS_PATH, LOCAL.project_name, 'static', path)
     return _static(request.environ, filename)
 
 @expose('/src/<path:path>')
-def src(request, path, **kwargs):
+def src(request, path):
     """Commun static part of Site'n'Co for sources."""
     return _static(request.environ, os.path.join('static', 'src', path))
 
 @expose('/css/csstyle.css')
-def csstyle_stylesheet(request, **kwargs):
+def csstyle_stylesheet(request):
     """Style management with CSStyle."""
     return werkzeug.BaseResponse(css(), headers={'Content-Type': 'text/css'})
 
 @expose('/css/<path:path>')
-def css_static_files(request, path, **kwargs):
+def css_static_files(request, path):
     """CSS static files."""
     filenames = (
         os.path.join(PROJECTS_PATH, LOCAL.project_name, 'static', 'css', path),
@@ -56,20 +56,20 @@ def css_static_files(request, path, **kwargs):
     raise werkzeug.exceptions.NotFound
 
 @expose('/rss')
-def rss_feed(request, **kwargs):
+def rss_feed(request):
     """News RSS feed."""
     return werkzeug.BaseResponse(
         rss(request.host_url), headers={'Content-Type': 'application/rss+xml'})
 
 @expose_template('/news')
-def news(request, **kwargs):
+def news(request):
     """News pages."""
     news = SITE.search('news', {'project': LOCAL.project_name})
     LOCAL.variables.update({'page_title': 'News', 'news': news})
     return LOCAL.variables
 
 @expose('/tutorials/<string:tutorial>')
-def tutorial(request, tutorial, **kwargs):
+def tutorial(request, tutorial):
     """Tutorial."""
     item = None
     LOCAL.variables.update({'tutorial': tutorial , 'page_title': 'Tutorials'})
@@ -92,19 +92,20 @@ def tutorial(request, tutorial, **kwargs):
     return response
 
 @expose_template('/tutorials')
-def tutorials(request, **kwargs):
+def tutorials(request):
     """Tutorials."""
-    LOCAL.variables.update({'page_title': 'Tutorials'})
+    tutorials = SITE.search('tutorial', {'project': LOCAL.project_name})
+    LOCAL.variables.update({'page_title': 'Tutorials', 'tutorials': tutorials})
     return LOCAL.variables
 
 @expose('/<path:page>')
-def default(request, page='home', **kwargs):
+def default(request, page='home'):
     """Static ReST pages."""
     item = _open_or_404('page', {'project': LOCAL.project_name, 'page': page})
     LOCAL.variables.update({'page': item, 'page_title': item['page'].capitalize()})
     return kraken.site.TemplateResponse(LOCAL.site, 'page', LOCAL.variables)
 
 @expose('/')
-def root(request, **kwargs):
+def root(request):
     """Home page."""
-    return default(request, **kwargs)
+    return default(request)
