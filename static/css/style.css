@@ -315,8 +315,12 @@ display: none;
 
 .footnote tr, .footnote td {
 border: 0;
-padding: 0 .5em;
+padding: 0 .25em;
 vertical-align: top;
+}
+
+.footnote a {
+margin: 0;
 }
 
 .footnote {
@@ -327,11 +331,6 @@ opacity: .8;
 font-size: .8em;
 margin: 0;
 padding: 0 1em;
-}
-
-.footnote td {
-margin: 0;
-padding: 0 .2em;
 }
 
 .footnote td.label:after {
