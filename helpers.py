@@ -34,8 +34,9 @@ class Pygments(Directive):
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
-class InlinePygments(Directive):
 
+class InlinePygments(Directive):
+    """Inline code sytax highlighting."""
     required_arguments = 1
     optional_arguments = 0
     final_argument_whitespace = True
@@ -50,7 +51,7 @@ class InlinePygments(Directive):
 
 
 class UrlGet(Directive):
-
+    """Serve the response of a request."""
     required_arguments = 2
     optional_arguments = 0
     has_content = False
@@ -60,22 +61,17 @@ class UrlGet(Directive):
         url = self.arguments[1]
         parts =  filename.split('/')
         cwd = '/'.join(parts[:-1])
-        filename = parts[-1]
-        pipe = subprocess.Popen(['python', filename, url],
-                cwd=cwd, stdout=subprocess.PIPE)
+        pipe = subprocess.Popen(
+            ['python', filename, url], cwd=cwd, stdout=subprocess.PIPE)
         content = pipe.communicate()[0].strip()
         retcode = pipe.poll()
         if retcode:
-            content = 'An error occured'
+            content = 'An error occured %s' % "-".join(['python', filename, url])
         content = '<iframe src="data:text/html;base64,%s">' \
             'Request Output</iframe>' % content.encode('base64')
         # Remove EOLs
         content = content.replace('\n', '')
         return [docutils.nodes.raw('', content, format='html')]
-
-
-
-
 
 
 class PyResult(Directive):
@@ -104,7 +100,7 @@ directives.register_directive('werkzeugurl', UrlGet)
 def rest_to_article(item, level=3):
     """Convert ``item`` to HTML article."""
     parts = docutils.core.publish_parts(
-        source=item['content'],
+        source=item['content'].read(),
         writer=docutils.writers.html4css1.Writer(),
         settings_overrides={'initial_header_level': level})
 
@@ -132,6 +128,7 @@ def rest_to_article(item, level=3):
             if attrib in element.attrib:
                 del element.attrib[attrib]
     return ElementTree.tostring(tree).replace('@', u'&#64;')
+
 
 
 

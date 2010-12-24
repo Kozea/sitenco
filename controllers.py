@@ -77,7 +77,7 @@ def tutorial(request, tutorial):
     item = _open_or_404(
         'tutorial', {'project': LOCAL.project_name, 'tutorial': tutorial})
     LOCAL.variables.update(
-        {'page_title': item['tutorial'].capitalize(), 'tutorial': item})
+        {'page_title': item['title'], 'tutorial': item})
     filename = os.path.join(
         PROJECTS_PATH, LOCAL.project_name, 'tutorials', '%s.html' % tutorial)
     if os.path.isfile(filename):
@@ -102,7 +102,7 @@ def tutorials(request):
 def default(request, page='home'):
     """Static ReST pages."""
     item = _open_or_404('page', {'project': LOCAL.project_name, 'page': page})
-    LOCAL.variables.update({'page': item, 'page_title': item['page'].capitalize()})
+    LOCAL.variables.update({'page': item, 'page_title': item['title']})
     return kraken.site.TemplateResponse(LOCAL.site, 'page', LOCAL.variables)
 
 @expose('/')

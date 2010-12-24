@@ -3,10 +3,9 @@
 {% block content %}
 <section>
   <h2>Tutorials</h2>
-  <ul>
 {% for tutorial in tutorials %}
-    <li><a href="/tutorials/{{ tutorial.tutorial }}">{{ tutorial.tutorial }}</a></li>
+  <h3><a href="/tutorials/{{ tutorial.tutorial }}">{{ tutorial.title }}</a></h3>
+  <p>{{ tutorial.abstract }}</p>
 {% endfor %}
-  </ul>
 </section>
 {% endblock content %}

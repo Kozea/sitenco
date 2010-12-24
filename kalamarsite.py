@@ -1,23 +1,26 @@
 import os
 import kalamar.site
-from kalamar.access_point.unicode_stream import UnicodeStream
+from kalamar.access_point.cache import Cache
+from kalamar.access_point.xml.rest import Rest, RestProperty, TITLE
 from kalamar.access_point.filesystem import FileSystem
 
 from sitenco import PROJECTS_PATH
 
-page = UnicodeStream(
-    FileSystem(
-        PROJECTS_PATH, r'(.*)/pages/(.*)\.rst', ('project', 'page')),
-    'content', 'utf-8')
-news = UnicodeStream(
+page = Rest(
+        FileSystem(
+            PROJECTS_PATH, r'(.*)/pages/(.*)\.rst', ('project', 'page')),
+        [('title', RestProperty(unicode, TITLE))], 'content')
+news = Rest(
     FileSystem(
         PROJECTS_PATH, r'(.*)/news/(.*)/(.*)\.rst',
         ('project', 'writer', 'datetime')),
-    'content', 'utf-8')
-tutorial = UnicodeStream(
-    FileSystem(
-        PROJECTS_PATH, r'(.*)/tutorials/(.*)\.rst', ('project', 'tutorial')),
-    'content', 'utf-8')
+    [('title', RestProperty(unicode, TITLE))], 'content')
+tutorial = Cache(
+    Rest(
+        FileSystem(
+            PROJECTS_PATH, r'(.*)/tutorials/(.*)\.rst', ('project', 'tutorial')),
+        [('title', RestProperty(unicode, TITLE)),
+         ('abstract', RestProperty(unicode, '//topic/paragraph'))], 'content'))
                      
 SITE = kalamar.site.Site()
 SITE.register('page', page)
