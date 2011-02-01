@@ -22,6 +22,8 @@ def _open_or_404(*args, **kwargs):
 def _static(environ, filename, mimetype=None):
     """Get a response wrapping the file called filename."""
     fullpath = os.path.join(SITE_ROOT, filename)
+    if not os.path.isfile(fullpath):
+        raise werkzeug.exceptions.NotFound
     wrapped_file = werkzeug.wrap_file(environ, open(fullpath))
     if not mimetype:
         mimetype = mimetypes.guess_type(filename)[0]
