@@ -187,13 +187,16 @@ text-transform: lowercase;
 nav li {
 display: inline;
 opacity: 0.95;
+padding: .25em .5em;
+text-shadow: 0 0 1px white;
 }
 
 nav li a {
-color: #eeeeec;
-padding: .25em .5em;
-margin: 0;
 border-radius: 1em;
+color: #eeeeec;
+margin: -.25em -.5em;
+padding: .25em .5em;
+text-shadow: none;
 }
 
 nav li a:hover,
