@@ -46,7 +46,7 @@ def rss(host_url):
         item.append(link)
 
         parts = docutils.core.publish_parts(
-            source=new['content'],
+            source=new['content'].read(),
             writer=docutils.writers.html4css1.Writer(),
             settings_overrides={'initial_header_level': 2})
         description_text = parts['fragment']
