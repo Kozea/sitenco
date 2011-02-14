@@ -67,6 +67,8 @@ class UrlGet(Directive):
         retcode = pipe.poll()
         if retcode:
             content = 'An error occured %s' % "-".join(['python', filename, url])
+        content = content.replace(
+            '<html', '<html style="background-color: white"')
         content = '<iframe src="data:text/html;base64,%s">' \
             'Request Output</iframe>' % content.encode('base64')
         # Remove EOLs
