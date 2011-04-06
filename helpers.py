@@ -99,10 +99,10 @@ directives.register_directive('pyexec', PyResult)
 directives.register_directive('werkzeugurl', UrlGet)
 
 
-def rest_to_article(item, level=3):
+def rest_to_article(item, level=3, item_prop='content'):
     """Convert ``item`` to HTML article."""
     parts = docutils.core.publish_parts(
-        source=item['content'].read(),
+        source=item[item_prop].read(),
         writer=docutils.writers.html4css1.Writer(),
         settings_overrides={'initial_header_level': level})
 
