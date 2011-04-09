@@ -226,6 +226,10 @@ background-color: #e70;
 box-shadow: 0 0 5px #d60;
 }
 
+footer {
+clear: both;
+}
+
 footer ul {
 display: block;
 text-align: center;
