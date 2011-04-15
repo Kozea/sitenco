@@ -16,10 +16,11 @@ def rss(host_url):
     channel = ET.Element('channel')
     tree.append(channel)
     title = ET.Element('title')
-    title.text = LOCAL.variables['title']
+    title.text = '%s - %s' % (
+        LOCAL.variables['name'], LOCAL.variables['description'])
     channel.append(title)
     description = ET.Element('description')
-    description.text = u'News from %s' % LOCAL.variables['title']
+    description.text = u'News from %s' % LOCAL.variables['name']
     channel.append(description)
     link = ET.Element('link')
     link.text = host_url
@@ -31,7 +32,6 @@ def rss(host_url):
         item = ET.Element('item')
         channel.append(item)
         title = ET.Element('title')
-        #title.text = new['title']
         item.append(title)
         guid = ET.Element('guid')
         guid.text = str(hash(new))
