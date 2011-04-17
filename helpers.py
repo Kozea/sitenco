@@ -19,7 +19,7 @@ ROOT = os.path.dirname(__file__)
 
 
 class Pygments(Directive):
-    """Python code syntax hightlighting."""
+    """Code syntax hightlighting."""
     required_arguments = 1
     optional_arguments = 1
     final_argument_whitespace = True
@@ -30,7 +30,7 @@ class Pygments(Directive):
         lexer_name = self.arguments[1] if len(self.arguments) > 1 else 'python'
         code = open(filename).read()
         lexer = get_lexer_by_name(lexer_name)
-        formatter = HtmlFormatter(noclasses=True)
+        formatter = HtmlFormatter(noclasses=True, nobackground=True)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
@@ -45,7 +45,7 @@ class InlinePygments(Directive):
     def run(self):
         lexer = get_lexer_by_name(self.arguments[0])
         code = u'\n'.join(self.content)
-        formatter = HtmlFormatter(noclasses=True)
+        formatter = HtmlFormatter(noclasses=True, nobackground=True)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
@@ -132,8 +132,7 @@ def rest_to_article(item, level=3, item_prop='content'):
     return ElementTree.tostring(tree).replace('@', u'&#64;')
 
 
-
-
 def pretty_datetime(datetime_string):
+    """Convert an internal datetime string to a pretty date."""
     return datetime.datetime.strptime(
         datetime_string,'%Y-%m-%d@%H:%M:%S').strftime('%A, %B %-d %Y')
