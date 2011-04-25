@@ -12,10 +12,23 @@ import os
 import pygments
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
+from pygments.style import Style
+from pygments.token import Keyword, Name, Comment, String, Error, Number
 import subprocess
 from xml.etree import ElementTree
 
 ROOT = os.path.dirname(__file__)
+
+
+class PygmentsStyle(Style):
+    """Pygments style based on Solarized."""
+    styles = {
+        Keyword: '#b58900',
+        Name: '#cb4b16',
+        Comment: '#839496',
+        String: '#2aa198',
+        Error: '#dc322f',
+        Number: '#859900'}
 
 
 class Pygments(Directive):
@@ -30,7 +43,8 @@ class Pygments(Directive):
         lexer_name = self.arguments[1] if len(self.arguments) > 1 else 'python'
         code = open(filename).read()
         lexer = get_lexer_by_name(lexer_name)
-        formatter = HtmlFormatter(noclasses=True, nobackground=True)
+        formatter = HtmlFormatter(
+            noclasses=True, nobackground=True, style=PygmentsStyle)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
@@ -45,7 +59,8 @@ class InlinePygments(Directive):
     def run(self):
         lexer = get_lexer_by_name(self.arguments[0])
         code = u'\n'.join(self.content)
-        formatter = HtmlFormatter(noclasses=True, nobackground=True)
+        formatter = HtmlFormatter(
+            noclasses=True, nobackground=True, style=PygmentsStyle)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
 
