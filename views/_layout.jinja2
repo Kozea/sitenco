@@ -17,7 +17,7 @@
   <nav>
     <ul>
 {% for element in menu %}
-{% set active = element.name|lower != request.path.strip('/')|lower %}
+{% set active = element.link != request.path %}
       <li>
         {%- if active %}<a href="{{ element.link }}">{% endif -%}
           {{ element.name }}
