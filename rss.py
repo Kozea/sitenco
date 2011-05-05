@@ -27,11 +27,12 @@ def rss(host_url):
     channel.append(link)
 
     for date, new in sorted(ordered_news.items(), reverse=True):
-        id_string = new['datetime'] #new['title'].lower().replace(' ', '-').replace('.', '-')
+        id_string = new['datetime']
         url = "%snews#%s" % (host_url, id_string)
         item = ET.Element('item')
         channel.append(item)
         title = ET.Element('title')
+        title.text = new['title']
         item.append(title)
         guid = ET.Element('guid')
         guid.text = str(hash(new))
