@@ -3,7 +3,8 @@
 
 <head>
   <meta content="text/html; charset=utf-8" http-equiv="content-type" />
-  <title>{{ name }} - {{ description }} - {{ page_title }}</title>
+  <title>{{ name }} - {{ description }}
+    {%- if page_title|d %} - {{ page_title }}{% endif %}</title>
   <link href="/css/csstyle.css" media="screen" type="text/css" rel="stylesheet" />
   <link href="/static/css/img/icon.png" type="image/png" rel="shortcut icon" />
   <link href="/rss" type="application/rss+xml" rel="alternate" title="{{ title }} RSS 2.0" />
