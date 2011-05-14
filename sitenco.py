@@ -111,9 +111,9 @@ def css_static_files(path):
 @app.route('/rss')
 def rss():
     """RSS feed."""
-    news = SITE.search('news', {'project': g.project_name})
+    news_items = SITE.search('news', {'project': g.project_name})
     ordered_news = {}
-    for new in news:
+    for new in news_items:
         ordered_news[new['datetime']] = new
 
     tree = ET.Element('rss', {'version': '2.0'})
@@ -165,37 +165,36 @@ def rss():
 @app.route('/news')
 def news():
     """News."""
-    news = SITE.search('news', {'project': g.project_name})
-    g.variables.update({'page_title': 'News', 'news': news})
+    news_items = SITE.search('news', {'project': g.project_name})
+    g.variables.update({'page_title': 'News', 'news': news_items})
     return render_template('news.html.jinja2', **g.variables)
 
 
 @app.route('/tutorials/<string:tutorial>')
-def tutorial(request, tutorial):
+def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404(
-        'tutorial', {'project': g.project_name, 'tutorial': tutorial})
-    g.variables.update(
-        {'page_title': item['title'], 'tutorial': item})
+        'tutorial', {'project': g.project_name, 'tutorial': tuto})
     filename = os.path.join(
-        PATH, g.project_name, 'tutorials', '%s.html' % tutorial)
+        PATH, g.project_name, 'tutorials', '%s.html' % tuto)
     if os.path.isfile(filename):
         return _static(filename, 'text/html')
 
-    g.variables.update({'tutorial': tutorial , 'page_title': 'Tutorials'})
+    g.variables.update({'page_title': item['title'], 'tutorial': item})
     response = render_template('tutorial.html.jinja2', **g.variables)
 
-    with open(filename, 'w') as fd:
-        fd.write(response.data)
+    with open(filename, 'w') as stream:
+        stream.write(response.data)
 
     return response
 
 
 @app.route('/tutorials')
-def tutorials(request):
+def tutorials():
     """Tutorials."""
-    tutorials = SITE.search('tutorial', {'project': g.project_name})
-    g.variables.update({'page_title': 'Tutorials', 'tutorials': tutorials})
+    tutorials_items = SITE.search('tutorial', {'project': g.project_name})
+    g.variables.update(
+        {'page_title': 'Tutorials', 'tutorials': tutorials_items})
     return render_template('tutorials.html.jinja2', **g.variables)
 
 
