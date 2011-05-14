@@ -8,4 +8,4 @@ from flup.server.fcgi import WSGIServer
 
 import sitenco
 
-WSGIServer(sitenco.Site()).run()
+WSGIServer(sitenco.app).run()
