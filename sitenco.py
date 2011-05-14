@@ -29,12 +29,12 @@ for project in projects:
     CONFIG[project] = json.load(open(config_path))
 
 
-def _static(environ, filename, mimetype=None):
+def _static(filename, mimetype=None):
     """Get a response wrapping the file called filename."""
     fullpath = os.path.join(SITE_ROOT, filename)
     if not os.path.isfile(fullpath):
         raise werkzeug.exceptions.NotFound
-    wrapped_file = werkzeug.wrap_file(environ, open(fullpath))
+    wrapped_file = werkzeug.wrap_file(request.environ, open(fullpath))
     if not mimetype:
         mimetype = mimetypes.guess_type(filename)[0]
     return werkzeug.BaseResponse(
@@ -54,13 +54,13 @@ def before_request():
 def static(path):
     """Static part of projects."""
     filename = os.path.join(PROJECTS_PATH, g.project_name, 'static', path)
-    return _static(request.environ, filename)
+    return _static(filename)
 
 
 @app.route('/src/<path:path>')
 def src(path):
     """Commun static part of Site'n'Co for sources."""
-    return _static(request.environ, os.path.join('static', 'src', path))
+    return _static(os.path.join('static', 'src', path))
 
 
 @app.route('/css/csstyle.css')
@@ -93,7 +93,7 @@ def css_static_files(path):
         os.path.join(SITE_ROOT, 'static', 'css', path))
     for filename in filenames:
         if os.path.isfile(filename):
-            return _static(request.environ, filename)
+            return _static(filename)
     raise werkzeug.exceptions.NotFound
 
 
@@ -171,7 +171,7 @@ def tutorial(request, tutorial):
     filename = os.path.join(
         PROJECTS_PATH, g.project_name, 'tutorials', '%s.html' % tutorial)
     if os.path.isfile(filename):
-        return _static(request.environ, filename, 'text/html')
+        return _static(filename, 'text/html')
 
     response = render_template('tutorial.html.jinja2', **g.variables)
 
