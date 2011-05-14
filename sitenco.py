@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+"""
+Site'N'Co
+=========
+
+Simple websites for simple projects.
+
+"""
+
 import os
 import json
 import csstyle
@@ -34,6 +42,15 @@ def _static(filename, mimetype=None):
         mimetype = mimetypes.guess_type(filename)[0]
     return werkzeug.BaseResponse(
         wrapped_file, direct_passthrough=True, mimetype=mimetype)
+
+
+def _open_or_404(page):
+    """Return an item or raise 404."""
+    try:
+        return SITE.open('page', {'project': g.project_name, 'page': page})
+    except NotOneMatchingItem:
+        raise werkzeug.exceptions.NotFound
+
 
 
 @app.before_request
@@ -186,13 +203,8 @@ def tutorials(request):
 @app.route('/<path:page>')
 def default(page='home'):
     """Default page."""
-    try:
-        item = SITE.open(
-            'page', {'project': g.project_name, 'page': page})
-    except NotOneMatchingItem:
-        raise werkzeug.exceptions.NotFound
-    g.variables.update(
-        {'page': item, 'page_title': item['title'], 'helpers': helpers})
+    item = _open_or_404(page)
+    g.variables.update({'page': item, 'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)
 
 
