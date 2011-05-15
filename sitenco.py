@@ -174,8 +174,8 @@ def tutorials():
 def static(folder, path):
     """Static files."""
     filenames = (
-        os.path.join('static', folder, path),
-        os.path.join('projects', g.project_name, 'static', folder, path))
+        os.path.join('projects', g.project_name, 'static', folder, path),
+        os.path.join('static', folder, path))
     for filename in filenames:
         if os.path.isfile(os.path.join(SITE_ROOT, filename)):
             return send_from_directory(SITE_ROOT, filename)
