@@ -146,6 +146,7 @@ def news():
 def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
+    item.html = rest_to_article(item)
     filename = os.path.join(
         'projects', g.project_name, 'tutorials', '%s.html' % tuto)
     if os.path.isfile(os.path.join(SITE_ROOT, filename)):
