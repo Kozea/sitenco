@@ -12,7 +12,6 @@ import os
 import json
 import csstyle
 import docutils
-import mimetypes
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from kalamar.access_point import NotOneMatchingItem
@@ -23,6 +22,7 @@ from flask import \
 import kalamarsite
 import helpers
 
+
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, 'projects')
 SITE = kalamarsite.create_site(PATH)
@@ -31,16 +31,6 @@ CONFIG = {
     for project in os.listdir(PATH) if not project.startswith('.')}
 
 app = Flask(__name__)
-
-
-def _static(filename, mimetype=None):
-    """Get a response wrapping the file called filename."""
-    fullpath = os.path.join(SITE_ROOT, filename)
-    if not os.path.isfile(fullpath):
-        raise NotFound
-    if not mimetype:
-        mimetype = mimetypes.guess_type(filename)[0]
-    return send_from_directory(SITE_ROOT, filename)
 
 
 def _open_or_404(access_point, condition):
@@ -58,18 +48,6 @@ def before_request():
     g.project_name = request.host.split('.')[-2]
     g.variables = CONFIG[g.project_name].copy()
     g.variables.update({'project_name': g.project_name, 'helpers': helpers})
-
-
-@app.route('/static/<path:path>')
-def static(path):
-    """Static part of projects."""
-    return _static(os.path.join('projects', g.project_name, 'static', path))
-
-
-@app.route('/src/<path:path>')
-def src(path):
-    """Commun static part of Site'n'Co for sources."""
-    return _static(os.path.join('static', 'src', path))
 
 
 @app.route('/css/csstyle.css')
@@ -92,18 +70,6 @@ def csstyle_stylesheet():
         text += repr(browser_parser.transform(parser, keep_existant=False))
 
     return Response(text, mimetype='text/css')
-
-
-@app.route('/css/<path:path>')
-def css_static_files(path):
-    """CSS static files."""
-    filenames = (
-        os.path.join('projects', g.project_name, 'static', 'css', path),
-        os.path.join('static', 'css', path))
-    for filename in filenames:
-        if os.path.isfile(os.path.join(SITE_ROOT, filename)):
-            return _static(filename)
-    raise NotFound
 
 
 @app.route('/rss')
@@ -175,7 +141,7 @@ def tutorial(tuto):
     filename = os.path.join(
         'projects', g.project_name, 'tutorials', '%s.html' % tuto)
     if os.path.isfile(os.path.join(SITE_ROOT, filename)):
-        return _static(filename, 'text/html')
+        return send_from_directory(SITE_ROOT, filename)
 
     g.variables.update({'page_title': item['title'], 'tutorial': item})
     response = render_template('tutorial.html.jinja2', **g.variables)
@@ -195,8 +161,26 @@ def tutorials():
     return render_template('tutorials.html.jinja2', **g.variables)
 
 
+@app.route('/<folder>/<path:path>')
+def static(folder, path):
+    """Static part of projects."""
+    if folder == 'css':
+        filenames = (
+            os.path.join('projects', g.project_name, 'static', 'css', path),
+            os.path.join('static', 'css', path))
+    elif folder == 'src':
+        filenames = (os.path.join('projects', g.project_name, 'static', path),)
+    elif folder == 'static':
+        filenames = (os.path.join('static', 'src', path),)
+
+    for filename in filenames:
+        if os.path.isfile(os.path.join(SITE_ROOT, filename)):
+            return send_from_directory(SITE_ROOT, filename)
+    raise NotFound
+
+
 @app.route('/')
-@app.route('/<path:page>')
+@app.route('/<page>')
 def default(page='home'):
     """Default page."""
     item = _open_or_404('page', {'page': page})
