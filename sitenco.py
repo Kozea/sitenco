@@ -44,10 +44,11 @@ def _static(filename, mimetype=None):
         wrapped_file, direct_passthrough=True, mimetype=mimetype)
 
 
-def _open_or_404(page):
+def _open_or_404(access_point, request):
     """Return an item or raise 404."""
+    request['project'] = g.project_name
     try:
-        return SITE.open('page', {'project': g.project_name, 'page': page})
+        return SITE.open(access_point, request)
     except NotOneMatchingItem:
         raise werkzeug.exceptions.NotFound
 
@@ -170,11 +171,10 @@ def news():
     return render_template('news.html.jinja2', **g.variables)
 
 
-@app.route('/tutorials/<string:tutorial>')
+@app.route('/tutorials/<string:tuto>')
 def tutorial(tuto):
     """Tutorial."""
-    item = _open_or_404(
-        'tutorial', {'project': g.project_name, 'tutorial': tuto})
+    item = _open_or_404('tutorial', {'tutorial': tuto})
     filename = os.path.join(
         PATH, g.project_name, 'tutorials', '%s.html' % tuto)
     if os.path.isfile(filename):
@@ -184,7 +184,7 @@ def tutorial(tuto):
     response = render_template('tutorial.html.jinja2', **g.variables)
 
     with open(filename, 'w') as stream:
-        stream.write(response.data)
+        stream.write(response)
 
     return response
 
@@ -202,7 +202,7 @@ def tutorials():
 @app.route('/<path:page>')
 def default(page='home'):
     """Default page."""
-    item = _open_or_404(page)
+    item = _open_or_404('page', {'page': page})
     g.variables.update({'page': item, 'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)
 
