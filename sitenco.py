@@ -163,16 +163,10 @@ def tutorials():
 
 @app.route('/<folder>/<path:path>')
 def static(folder, path):
-    """Static part of projects."""
-    if folder == 'css':
-        filenames = (
-            os.path.join('projects', g.project_name, 'static', 'css', path),
-            os.path.join('static', 'css', path))
-    elif folder == 'src':
-        filenames = (os.path.join('projects', g.project_name, 'static', path),)
-    elif folder == 'static':
-        filenames = (os.path.join('static', 'src', path),)
-
+    """Static files."""
+    filenames = (
+        os.path.join('static', folder, path),
+        os.path.join('projects', g.project_name, 'static', folder, path))
     for filename in filenames:
         if os.path.isfile(os.path.join(SITE_ROOT, filename)):
             return send_from_directory(SITE_ROOT, filename)
