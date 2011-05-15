@@ -12,6 +12,7 @@ import os
 import json
 import csstyle
 import docutils
+import argparse
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from kalamar.access_point import NotOneMatchingItem
@@ -23,6 +24,7 @@ import kalamarsite
 from helpers import rest_to_article
 
 
+PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, 'projects')
 SITE = kalamarsite.create_site(PATH)
@@ -52,7 +54,7 @@ def pretty_datetime(datetime_string):
 @app.before_request
 def before_request():
     """Set variables before each request."""
-    g.project_name = request.host.split('.')[-2]
+    g.project_name = PROJECT_NAME or request.host.split('.')[-2]
     g.variables = CONFIG[g.project_name].copy()
 
 
@@ -193,4 +195,7 @@ def default(page='home'):
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('project', nargs='?', help='project name')
+    PROJECT_NAME = getattr(parser.parse_args(), 'project')
     app.run(host='0.0.0.0', debug=True)
