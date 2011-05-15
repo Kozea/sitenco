@@ -28,7 +28,7 @@ PATH = os.path.join(SITE_ROOT, 'projects')
 SITE = kalamarsite.create_site(PATH)
 CONFIG = {
     project: json.load(open(os.path.join(PATH, project, 'configuration')))
-    for project in os.listdir(PATH) if not project.startswith('.')}
+    for project in os.listdir(PATH)}
 
 app = Flask(__name__)
 

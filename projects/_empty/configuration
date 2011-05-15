@@ -1,0 +1,10 @@
+{
+  "name": "My Name",
+  "description": "My Description",
+  "menu": [
+    {"name": "News", "link": "/news"},
+    {"name": "Documentation", "link": "/documentation"},
+    {"name": "Contribute", "link": "/contribute"},
+    {"name": "Download", "link": "/download"}
+  ]
+}
