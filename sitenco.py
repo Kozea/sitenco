@@ -12,12 +12,13 @@ import os
 import json
 import csstyle
 import docutils
-import werkzeug
 import mimetypes
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from flask import Flask, Response, g, render_template, request
 from kalamar.access_point import NotOneMatchingItem
+from werkzeug.exceptions import NotFound
+from flask import \
+    Flask, Response, g, render_template, request, send_from_directory
 
 import kalamarsite
 import helpers
@@ -36,22 +37,19 @@ def _static(filename, mimetype=None):
     """Get a response wrapping the file called filename."""
     fullpath = os.path.join(SITE_ROOT, filename)
     if not os.path.isfile(fullpath):
-        raise werkzeug.exceptions.NotFound
-    wrapped_file = werkzeug.wrap_file(request.environ, open(fullpath))
+        raise NotFound
     if not mimetype:
         mimetype = mimetypes.guess_type(filename)[0]
-    return werkzeug.BaseResponse(
-        wrapped_file, direct_passthrough=True, mimetype=mimetype)
+    return send_from_directory(SITE_ROOT, filename)
 
 
-def _open_or_404(access_point, request):
+def _open_or_404(access_point, condition):
     """Return an item or raise 404."""
-    request['project'] = g.project_name
+    condition['project'] = g.project_name
     try:
-        return SITE.open(access_point, request)
+        return SITE.open(access_point, condition)
     except NotOneMatchingItem:
-        raise werkzeug.exceptions.NotFound
-
+        raise NotFound
 
 
 @app.before_request
@@ -65,8 +63,7 @@ def before_request():
 @app.route('/static/<path:path>')
 def static(path):
     """Static part of projects."""
-    filename = os.path.join(PATH, g.project_name, 'static', path)
-    return _static(filename)
+    return _static(os.path.join('projects', g.project_name, 'static', path))
 
 
 @app.route('/src/<path:path>')
@@ -101,12 +98,12 @@ def csstyle_stylesheet():
 def css_static_files(path):
     """CSS static files."""
     filenames = (
-        os.path.join(PATH, g.project_name, 'static', 'css', path),
-        os.path.join(SITE_ROOT, 'static', 'css', path))
+        os.path.join('projects', g.project_name, 'static', 'css', path),
+        os.path.join('static', 'css', path))
     for filename in filenames:
-        if os.path.isfile(filename):
+        if os.path.isfile(os.path.join(SITE_ROOT, filename)):
             return _static(filename)
-    raise werkzeug.exceptions.NotFound
+    raise NotFound
 
 
 @app.route('/rss')
@@ -176,8 +173,8 @@ def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
     filename = os.path.join(
-        PATH, g.project_name, 'tutorials', '%s.html' % tuto)
-    if os.path.isfile(filename):
+        'projects', g.project_name, 'tutorials', '%s.html' % tuto)
+    if os.path.isfile(os.path.join(SITE_ROOT, filename)):
         return _static(filename, 'text/html')
 
     g.variables.update({'page_title': item['title'], 'tutorial': item})
