@@ -2,6 +2,6 @@
 
 {% block content %}
 <section>
-{{ helpers.rest_to_article(page) }}
+{{ page.html | safe }}
 </section>
 {% endblock content %}

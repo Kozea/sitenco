@@ -145,9 +145,3 @@ def rest_to_article(item, level=3, item_prop='content'):
             if attrib in element.attrib:
                 del element.attrib[attrib]
     return ElementTree.tostring(tree).replace('@', u'&#64;')
-
-
-def pretty_datetime(datetime_string):
-    """Convert an internal datetime string to a pretty date."""
-    return datetime.datetime.strptime(
-        datetime_string,'%Y-%m-%d@%H:%M:%S').strftime('%A, %B %-d %Y')

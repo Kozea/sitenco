@@ -4,9 +4,9 @@
 <a id="rss" href="/rss" title="RSS Feed">RSS Feed</a>
 {% for datetime, items in news|groupby('datetime')|sort(True) %}
 <section>
-<h2>{{ helpers.pretty_datetime(datetime) }}</h2>
+<h2>{{ datetime | pretty_datetime }}</h2>
 {% for item in items %}
-{{ helpers.rest_to_article(item, level=4) }}
+{{ item.html | safe }}
 {% endfor %}
 </section>
 {% endfor %}

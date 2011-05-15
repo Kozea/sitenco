@@ -20,7 +20,7 @@ from flask import \
     Flask, Response, g, render_template, request, send_from_directory
 
 import kalamarsite
-import helpers
+from helpers import rest_to_article
 
 
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -42,12 +42,18 @@ def _open_or_404(access_point, condition):
         raise NotFound
 
 
+@app.template_filter()
+def pretty_datetime(datetime_string):
+    """Convert an internal datetime string to a pretty date."""
+    return datetime.strptime(
+        datetime_string, '%Y-%m-%d@%H:%M:%S').strftime('%A, %B %-d %Y')
+
+
 @app.before_request
 def before_request():
     """Set variables before each request."""
     g.project_name = request.host.split('.')[-2]
     g.variables = CONFIG[g.project_name].copy()
-    g.variables.update({'project_name': g.project_name, 'helpers': helpers})
 
 
 @app.route('/css/csstyle.css')
@@ -129,7 +135,9 @@ def rss():
 @app.route('/news')
 def news():
     """News."""
-    news_items = SITE.search('news', {'project': g.project_name})
+    news_items = list(SITE.search('news', {'project': g.project_name}))
+    for item in news_items:
+        item.html = rest_to_article(item, level=4)
     g.variables.update({'page_title': 'News', 'news': news_items})
     return render_template('news.html.jinja2', **g.variables)
 
@@ -178,6 +186,7 @@ def static(folder, path):
 def default(page='home'):
     """Default page."""
     item = _open_or_404('page', {'page': page})
+    item.html = rest_to_article(item)
     g.variables.update({'page': item, 'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)
 
