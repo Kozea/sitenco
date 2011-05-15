@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# pylint: disable=C0103
 
 """
 Site'N'Co
@@ -195,7 +196,7 @@ def default(page='home'):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument('project', nargs='?', help='project name')
-    PROJECT_NAME = getattr(parser.parse_args(), 'project')
+    arg_parser = argparse.ArgumentParser()
+    arg_parser.add_argument('project', nargs='?', help='project name')
+    PROJECT_NAME = getattr(arg_parser.parse_args(), 'project')
     app.run(host='0.0.0.0', debug=True)
