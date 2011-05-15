@@ -4,10 +4,9 @@ Various Helpers
 """
 
 import docutils.core
-import docutils.writers.html4css1
+from docutils.writers.html4css1 import Writer
 from docutils.parsers.rst import directives, Directive
 
-import datetime
 import os
 import pygments
 from pygments.lexers import get_lexer_by_name
@@ -81,7 +80,7 @@ class UrlGet(Directive):
         content = pipe.communicate()[0].strip()
         retcode = pipe.poll()
         if retcode:
-            content = 'An error occured %s' % "-".join(['python', filename, url])
+            content = 'An error occured %s' % '-'.join([filename, url])
         content = content.replace(
             '<html', '<html style="background-color: white"')
         content = '<iframe src="data:text/html;base64,%s">' \
@@ -117,13 +116,12 @@ directives.register_directive('werkzeugurl', UrlGet)
 def rest_to_article(item, level=3, item_prop='content'):
     """Convert ``item`` to HTML article."""
     parts = docutils.core.publish_parts(
-        source=item[item_prop].read(),
-        writer=docutils.writers.html4css1.Writer(),
+        source=item[item_prop].read(), writer=Writer(),
         settings_overrides={'initial_header_level': level})
 
     # Post-production modification of generated document
     text = parts['html_body']
-    # Escaping non-breaking spaces is a strange behavior in docutils, a TODO
+    # Escaping non-breaking spaces is a strange behavior in docutils, a todo
     # exists in docutils.writers.html4css1.HTMLTranslator.encode. ElementTree
     # does not like &nbsp; so we change it by the real unicode chacarter.
     text = text.replace('&nbsp;', u'\xa0')
