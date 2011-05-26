@@ -18,7 +18,7 @@ from datetime import datetime
 from kalamar.access_point import NotOneMatchingItem
 from werkzeug.exceptions import NotFound
 from flask import \
-    Flask, Response, g, render_template, request, send_from_directory
+    Flask, Response, g, render_template, request, send_from_directory, redirect
 
 import kalamarsite
 from helpers import rest_to_article
@@ -194,6 +194,10 @@ def tutorials():
     g.variables.update(
         {'page_title': 'Tutorials', 'tutorials': tutorials_items})
     return render_template('tutorials.html.jinja2', **g.variables)
+
+@app.route('/tutorials/')
+def tutorials_slash():
+    return redirect('/tutorials')
 
 
 @app.route('/<folder>/<path:path>')
