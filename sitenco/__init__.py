@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # coding: utf8
 # pylint: disable=C0103
 
@@ -14,7 +13,6 @@ import os
 import json
 import csstyle
 import docutils
-import argparse
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from kalamar.access_point import NotOneMatchingItem
@@ -221,8 +219,3 @@ def default(page='home'):
     return render_template('page.html.jinja2', **g.variables)
 
 
-if __name__ == '__main__':
-    arg_parser = argparse.ArgumentParser()
-    arg_parser.add_argument('project', nargs='?', help='project name')
-    PROJECT_NAME = getattr(arg_parser.parse_args(), 'project')
-    app.run(host='0.0.0.0', debug=True)
