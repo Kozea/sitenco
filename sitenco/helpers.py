@@ -16,7 +16,8 @@ from pygments.token import Keyword, Name, Comment, String, Error, Number
 import subprocess
 from xml.etree import ElementTree
 
-ROOT = os.path.dirname(__file__)
+# The directory that contains "projects"
+ROOT = os.path.join(os.path.dirname(__file__), '..')
 
 
 class PygmentsStyle(Style):

@@ -26,7 +26,7 @@ from helpers import rest_to_article
 
 PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
-PATH = os.path.join(SITE_ROOT, 'projects')
+PATH = os.path.join(SITE_ROOT, '..', 'projects')
 SITE = kalamarsite.create_site(PATH)
 
 class Config(object):
@@ -175,18 +175,17 @@ def tutorial(tuto):
     item = _open_or_404('tutorial', {'tutorial': tuto})
     item.html = rest_to_article(item)
     filename = os.path.join(
-        'projects', g.project_name, 'tutorials', '%s.html' % tuto)
-    if os.path.isfile(os.path.join(SITE_ROOT, filename)):
-        return send_from_directory(SITE_ROOT, filename)
+        g.project_name, 'tutorials', '%s.html' % tuto)
+    if os.path.isfile(os.path.join(PATH, filename)):
+        return send_from_directory(PATH, filename)
 
     g.variables.update({'page_title': item['title'], 'tutorial': item})
     response = render_template('tutorial.html.jinja2', **g.variables)
 
-    with open(filename, 'w') as stream:
+    with open(os.path.join(PATH, filename), 'w') as stream:
         stream.write(response)
 
     return response
-
 
 @app.route('/tutorials')
 def tutorials():
@@ -201,11 +200,11 @@ def tutorials():
 def static_file(folder, path):
     """Static files."""
     filenames = (
-        os.path.join('projects', g.project_name, 'static', folder, path),
-        os.path.join('static', folder, path))
-    for filename in filenames:
-        if os.path.isfile(os.path.join(SITE_ROOT, filename)):
-            return send_from_directory(SITE_ROOT, filename)
+        (PATH, os.path.join(g.project_name, 'static', folder, path)),
+        (SITE_ROOT, os.path.join('static', folder, path)))
+    for base, filename in filenames:
+        if os.path.isfile(os.path.join(base, filename)):
+            return send_from_directory(base, filename)
     raise NotFound
 
 
