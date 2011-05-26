@@ -29,9 +29,33 @@ PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, 'projects')
 SITE = kalamarsite.create_site(PATH)
-CONFIG = {
-    project: json.load(open(os.path.join(PATH, project, 'configuration')))
-    for project in os.listdir(PATH)}
+
+class Config(object):
+    """
+    Behaves like a dict of project name string -> configuration dict.
+    On access, check the modification time of config files and re-read them as
+    needed.
+    """
+    def __init__(self):
+        self._cache = {}
+        
+    def __getitem__(self, project_name):
+        filename = os.path.join(PATH, project_name, 'configuration')
+        if not os.path.isfile(filename):
+            raise KeyError
+        mtime = os.path.getmtime(filename)
+        
+        if project_name in self._cache:
+            old_mtime, config = self._cache[project_name]
+            if old_mtime == mtime:
+                return config
+
+        with open(filename) as f:
+            config = json.load(f)
+        self._cache[project_name] = mtime, config
+        return config
+
+CONFIG = Config()
 
 app = Flask(__name__)
 
