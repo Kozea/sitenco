@@ -15,9 +15,9 @@ from pygments.style import Style
 from pygments.token import Keyword, Name, Comment, String, Error, Number
 import subprocess
 from xml.etree import ElementTree
+from flask import g
 
-# The directory that contains "projects"
-ROOT = os.path.join(os.path.dirname(__file__), '..')
+ROOT = os.path.join(os.path.dirname(__file__), '..', 'projects')
 
 
 class PygmentsStyle(Style):
@@ -39,7 +39,7 @@ class Pygments(Directive):
     has_content = False
 
     def run(self):
-        filename = os.path.join(ROOT, self.arguments[0])
+        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
         lexer_name = self.arguments[1] if len(self.arguments) > 1 else 'python'
         code = open(filename).read()
         lexer = get_lexer_by_name(lexer_name)
@@ -72,7 +72,7 @@ class UrlGet(Directive):
     has_content = False
 
     def run(self):
-        filename = os.path.join(ROOT, self.arguments[0])
+        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
         url = self.arguments[1]
         parts =  filename.split('/')
         cwd = '/'.join(parts[:-1])
@@ -99,7 +99,7 @@ class PyResult(Directive):
     has_content = False
 
     def run(self):
-        filename = os.path.join(ROOT, self.arguments[0])
+        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
         pipe = subprocess.Popen(['python', filename], stdout=subprocess.PIPE)
         content = pipe.communicate()[0]
         retcode = pipe.poll()
