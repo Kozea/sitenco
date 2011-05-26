@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# coding: utf8
 # pylint: disable=C0103
 
 """
@@ -57,7 +58,8 @@ class Config(object):
 
 CONFIG = Config()
 
-app = Flask(__name__)
+# We’re not using Flask’s static files, do not publish anything on /static.
+app = Flask(__name__, static_path='/nonexistent')
 
 
 def _open_or_404(access_point, condition):
@@ -198,7 +200,7 @@ def tutorials():
 
 
 @app.route('/<folder>/<path:path>')
-def static(folder, path):
+def static_file(folder, path):
     """Static files."""
     filenames = (
         os.path.join('projects', g.project_name, 'static', folder, path),
