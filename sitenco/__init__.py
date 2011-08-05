@@ -9,8 +9,7 @@ Simple websites for simple projects.
 
 """
 
-import os
-import json
+import os.path
 import csstyle
 import docutils
 import xml.etree.ElementTree as ET
@@ -20,8 +19,9 @@ from werkzeug.exceptions import NotFound
 from flask import \
     Flask, Response, g, render_template, request, send_from_directory, redirect
 
-import kalamarsite
-from helpers import rest_to_article
+from . import kalamarsite
+from .helpers import rest_to_article
+from .config import Config
 
 
 PROJECT_NAME = None
@@ -29,32 +29,36 @@ SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, '..', 'projects')
 SITE = kalamarsite.create_site(PATH)
 
-class Config(object):
-    """
+
+class ConfigRepository(object):
+    """Configurations repository.
+
     Behaves like a dict of project name string -> configuration dict.
+
     On access, check the modification time of config files and re-read them as
     needed.
+
     """
     def __init__(self):
         self._cache = {}
-        
+
     def __getitem__(self, project_name):
-        filename = os.path.join(PATH, project_name, 'configuration')
+        filename = os.path.join(PATH, project_name, 'configuration.yaml')
         if not os.path.isfile(filename):
             raise KeyError
         mtime = os.path.getmtime(filename)
-        
+
         if project_name in self._cache:
             old_mtime, config = self._cache[project_name]
             if old_mtime == mtime:
                 return config
 
-        with open(filename) as f:
-            config = json.load(f)
+        config = Config(filename)
         self._cache[project_name] = mtime, config
         return config
 
-CONFIG = Config()
+
+CONFIG = ConfigRepository()
 
 # We’re not using Flask’s static files, do not publish anything on /static.
 app = Flask(__name__, static_path='/nonexistent')
@@ -187,6 +191,7 @@ def tutorial(tuto):
 
     return response
 
+
 @app.route('/tutorials')
 def tutorials():
     """Tutorials."""
@@ -194,6 +199,7 @@ def tutorials():
     g.variables.update(
         {'page_title': 'Tutorials', 'tutorials': tutorials_items})
     return render_template('tutorials.html.jinja2', **g.variables)
+
 
 @app.route('/tutorials/')
 def tutorials_slash():
@@ -220,5 +226,3 @@ def default(page='home'):
     item.html = rest_to_article(item)
     g.variables.update({'page': item, 'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)
-
-

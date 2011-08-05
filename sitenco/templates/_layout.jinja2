@@ -19,11 +19,12 @@
 
   <nav>
     <ul>
-{% for element in menu %}
+{% for item in menu %}
+{% set name, element = item.items()[0] %}
 {% set active = element.link != request.path %}
       <li>
         {%- if active %}<a href="{{ element.link }}">{% endif -%}
-          {{ element.name }}
+          {{ name }}
         {%- if active %}</a>{% endif -%}
       </li>
 {% endfor %}   
