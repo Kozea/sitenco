@@ -23,7 +23,7 @@ class Config(object):
             tools = self._config_tree.get(module_name) or {}
             for name, config in tools.items():
                 tool_class = getattr(tool_module, name.capitalize())
-                public = self.get('/'.join((module_name, name, 'public')))
+                public = self.get([module_name, name, 'public'])
                 module_tools['name'] = (tool_class(public=public, **config))
 
             for directive_name in dir(tool_module):
@@ -36,29 +36,23 @@ class Config(object):
 
             self._tools.extend(module_tools.values())
 
-    def get(self, key, iterator=None):
-        """Get the property at ``key``.
-
-        The ``key`` attribute is a string corresponding to the key of the
-        needed value. The separator ``'/'`` is used as depth separator.
-
-        """
-        folders = key.split('/')
-        iterator = iterator or self._config_tree
+    def get(self, folders, node=None):
+        """Get the property at ``folders``."""
+        node = node or self._config_tree
         if folders:
             folder = folders.pop(0)
-            if folder in iterator:
-                iterator = iterator.get(folder)
+            if folder in node:
+                node = node.get(folder)
                 if folders:
-                    value = self.get('/'.join(folders), iterator)
+                    value = self.get(folders, node)
                     if value != None:
                         return value
                 else:
-                    return iterator
+                    return node
             if folders:
                 folders.insert(0, folder)
                 folders.pop(-2)
-                return self.get('/'.join(folders))
+                return self.get(folders)
 
     @property
     def tools(self):
