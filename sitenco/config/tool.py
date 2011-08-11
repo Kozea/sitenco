@@ -33,4 +33,4 @@ class Directive(RestDirective):
             self.tool = self.tool_dict[self.arguments[0]]
         else:
             # TODO: say "that's bad" in logs
-            self.tool = self.tool_dict.items()[0][1]
+            self.tool = self.tool_dict.values()[0]
