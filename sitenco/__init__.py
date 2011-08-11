@@ -16,8 +16,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from kalamar.access_point import NotOneMatchingItem
 from werkzeug.exceptions import NotFound
-from flask import \
-    Flask, Response, g, render_template, request, send_from_directory, redirect
+from flask import (
+    Flask, Response, g, render_template, request, send_from_directory)
 
 from . import kalamarsite
 from .helpers import rest_to_article
@@ -84,7 +84,7 @@ def pretty_datetime(datetime_string):
 def before_request():
     """Set variables before each request."""
     g.project_name = PROJECT_NAME or request.host.split('.')[-2]
-    g.variables = CONFIG[g.project_name].copy()
+    g.variables = CONFIG[g.project_name].config_tree
 
 
 @app.route('/css/csstyle.css')
@@ -109,7 +109,7 @@ def csstyle_stylesheet():
     return Response(text, mimetype='text/css')
 
 
-@app.route('/rss')
+@app.route('/rss/')
 def rss():
     """RSS feed."""
     news_items = SITE.search('news', {'project': g.project_name})
@@ -163,7 +163,7 @@ def rss():
     return Response(ET.tostring(tree, 'utf-8'), mimetype='application/rss+xml')
 
 
-@app.route('/news')
+@app.route('/news/')
 def news():
     """News."""
     news_items = list(SITE.search('news', {'project': g.project_name}))
@@ -173,7 +173,7 @@ def news():
     return render_template('news.html.jinja2', **g.variables)
 
 
-@app.route('/tutorials/<string:tuto>')
+@app.route('/tutorials/<string:tuto>/')
 def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
@@ -192,7 +192,7 @@ def tutorial(tuto):
     return response
 
 
-@app.route('/tutorials')
+@app.route('/tutorials/')
 def tutorials():
     """Tutorials."""
     tutorials_items = SITE.search('tutorial', {'project': g.project_name})
@@ -201,12 +201,7 @@ def tutorials():
     return render_template('tutorials.html.jinja2', **g.variables)
 
 
-@app.route('/tutorials/')
-def tutorials_slash():
-    return redirect('/tutorials')
-
-
-@app.route('/<folder>/<path:path>')
+@app.route('/<folder>/<path:path>/')
 def static_file(folder, path):
     """Static files."""
     filenames = (
@@ -219,7 +214,7 @@ def static_file(folder, path):
 
 
 @app.route('/')
-@app.route('/<page>')
+@app.route('/<page>/')
 def default(page='home'):
     """Default page."""
     item = _open_or_404('page', {'page': page})
