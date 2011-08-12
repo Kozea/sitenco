@@ -174,7 +174,7 @@ def news():
     return render_template('news.html.jinja2', **g.variables)
 
 
-@app.route('/tutorials/<string:tuto>/')
+@app.route('/tutorials/<string:tuto>')
 def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
@@ -202,7 +202,7 @@ def tutorials():
     return render_template('tutorials.html.jinja2', **g.variables)
 
 
-@app.route('/<folder>/<path:path>/')
+@app.route('/<folder>/<path:path>')
 def static_file(folder, path):
     """Static files."""
     filenames = (
