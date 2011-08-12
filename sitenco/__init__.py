@@ -61,7 +61,7 @@ class ConfigRepository(object):
 CONFIG = ConfigRepository()
 
 # We’re not using Flask’s static files, do not publish anything on /static.
-app = Flask(__name__, static_path='/nonexistent')
+app = Flask(__name__, static_path=None)
 
 
 def _open_or_404(access_point, condition):
@@ -154,7 +154,8 @@ def rss():
         parts = docutils.core.publish_parts(
             source=new['content'].read(),
             writer=docutils.writers.html4css1.Writer(),
-            settings_overrides={'initial_header_level': 2, 'doctitle_xform': 0})
+            settings_overrides={
+                'initial_header_level': 2, 'doctitle_xform': 0})
         description_text = parts['fragment']
         description = ET.Element('description')
         description.text = description_text
