@@ -24,9 +24,7 @@
 {% set name, element = item.items()[0] %}
 {% set active = element.link != request.path %}
       <li>
-        {%- if active %}<a href="{{ element.link }}">{% endif -%}
-          {{ name }}
-        {%- if active %}</a>{% endif -%}
+        <a{% if active %} href="{{ element.link }}"{% endif %}>{{ name }}</a>
       </li>
 {% endfor %}   
     </ul>
