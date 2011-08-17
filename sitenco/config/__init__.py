@@ -23,8 +23,7 @@ class Config(object):
             tools = self._config_tree.get(module_name) or {}
             for name, config in tools.items():
                 tool_class = getattr(tool_module, name.capitalize())
-                public = self.get([module_name, name, 'public'])
-                module_tools['name'] = (tool_class(public=public, **config))
+                module_tools['name'] = (tool_class(**config))
 
             for directive_name in dir(tool_module):
                 directive = getattr(tool_module, directive_name)

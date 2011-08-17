@@ -11,9 +11,6 @@ from docutils.parsers.rst import (
 class Tool(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, public=True):
-        self.public = public
-
     @abc.abstractmethod
     def update(self):
         """Update the data managed by the tool."""

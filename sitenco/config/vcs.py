@@ -15,10 +15,10 @@ class VCS(Tool):
     """Abstract class for VCS tools."""
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, path, branch, url=None, public=True):
+    def __init__(self, path, branch, url=None):
         self.path = path
         self.branch = branch
-        super(VCS, self).__init__(public)
+        super(VCS, self).__init__()
 
     @abc.abstractmethod
     def log(self, number=10):
@@ -28,9 +28,9 @@ class VCS(Tool):
 
 class Git(VCS):
     """Git tool."""
-    def __init__(self, path, branch='master', url=None, public=True):
+    def __init__(self, path, branch='master', url=None):
         self._repository = brigit.Git(path)
-        super(Git, self).__init__(path, branch, public)
+        super(Git, self).__init__(path, branch)
 
     def log(self, number=10):
         commits = "%s~%i..%s" % (self.branch, number, self.branch)
