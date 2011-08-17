@@ -12,7 +12,9 @@ a {
   border-radius: 6px;
   color: transparent;
   display: block;
+  font-size:0;
   height: 32px;
+  outline: 0;
   padding: 0;
   width: 32px;
 }
