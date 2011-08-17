@@ -45,7 +45,6 @@ class Log(Directive):
     option_spec = {'number': directives.nonnegative_int}
 
     def run(self):
-        super(Log, self).run()
         children = []
         for item in self.tool.log():
             children.append(nodes.term(text=item['hash']))

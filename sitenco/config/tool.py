@@ -18,16 +18,14 @@ class Tool(object):
 
 
 class Directive(RestDirective):
+    __metaclass__ = abc.ABCMeta
+
     required_arguments = 0
     optional_arguments = 1
     final_argument_whitespace = True
     has_content = False
-    tool_dict = None
     tool = None
 
     def run(self):
-        if self.arguments:
-            self.tool = self.tool_dict[self.arguments[0]]
-        else:
-            # TODO: say "that's bad" in logs
-            self.tool = self.tool_dict.values()[0]
+        """Method run each time a directive is called."""
+        raise NotImplementedError
