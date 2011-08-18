@@ -4,11 +4,11 @@ Module managing the projects configuration files.
 """
 
 import yaml
-from docutils.parsers.rst import directives
+from docutils.parsers.rst import directives, roles
 
-from . import tool, vcs
+from . import tool, code_browser, vcs
 
-TOOLS = [vcs]
+TOOLS = [code_browser, vcs]
 
 
 class Config(object):
@@ -27,13 +27,20 @@ class Config(object):
                 continue
 
             tool_type, tool_name = item.split('(')
-            tool_type = tool_type.strip()
+            tool_type = tool_type.strip().replace(' ', '_')
             tool_name = tool_name.strip(' )')
             self.config_tree[tool_type] = self.config_tree.pop(item)
 
             if tool_type in tool_types:
                 tool_module = tool_types[tool_type]
                 tool_class = getattr(tool_module, tool_name.capitalize())
+
+                for prop in self.config_tree[tool_type]:
+                    if ' ' in prop:
+                        new_prop = prop.replace(' ', '_')
+                        values = self.config_tree[tool_type].pop(prop)
+                        self.config_tree[tool_type][new_prop] = values
+
                 try:
                     tool_instance = tool_class(**self.config_tree[tool_type])
                 except:
@@ -41,13 +48,18 @@ class Config(object):
                     continue
                 self.tools[tool_type] = tool_instance
 
-                for directive_name in dir(tool_module):
-                    directive = getattr(tool_module, directive_name)
-                    if isinstance(directive, type):
-                        if issubclass(directive, tool.Directive):
-                            directive.tool = tool_instance
+                for class_name in dir(tool_module):
+                    cls = getattr(tool_module, class_name)
+                    if isinstance(cls, type):
+                        if issubclass(cls, tool.Directive) and cls != tool.Directive:
                             directives.register_directive(
-                                directive_name.lower(), directive)
+                                class_name.lower(), cls)
+                        elif issubclass(cls, tool.Role) and cls != tool.Role:
+                            role = cls()
+                            function = lambda *args, **kwargs: role.run(
+                                *args, **kwargs)
+                            roles.register_canonical_role(
+                                class_name.lower(), function)
 
     def get(self, folders, node=None):
         """Get the property at ``folders``."""

@@ -84,7 +84,8 @@ def pretty_datetime(datetime_string):
 def before_request():
     """Set variables before each request."""
     g.project_name = PROJECT_NAME or request.host.split('.')[-2]
-    g.variables = CONFIG[g.project_name].config_tree
+    g.config = CONFIG[g.project_name]
+    g.variables = CONFIG[g.project_name].config_tree.copy()
 
 
 @app.route('/css/csstyle.css')
