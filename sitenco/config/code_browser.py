@@ -21,18 +21,35 @@ class CodeBrowser(Tool):
         """Nothing has to be done to update code browser tools."""
 
     @abc.abstractproperty
+    def base_url(self):
+        """Base URL of the code browser service."""
+        raise NotImplementedError
+
+    @property
     def code_link(self, number=10):
         """Link to the code browser interface."""
-        raise NotImplementedError
+        return self.base_url + self.project_name
 
 
 class Github(CodeBrowser):
     """Github code browser tool."""
     base_url = 'https://github.com/'
 
+
+class Gitorious(CodeBrowser):
+    """Github code browser tool."""
+    base_url = 'https://gitorious.org/'
+
+
+class Redmine(CodeBrowser):
+    """Github code browser tool."""
+    def __init__(self, project_name, base_url):
+        super(Redmine, self).__init__(project_name)
+        self._base_url = base_url
+
     @property
-    def code_link(self):
-        return self.base_url + self.project_name
+    def base_url(self):
+        return self._base_url
 
 
 class CodeLink(Role):
