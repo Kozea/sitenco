@@ -18,7 +18,7 @@ class BugTracker(Tool):
         super(BugTracker, self).__init__()
 
     def update(self):
-        """Nothing has to be done to update code browser tools."""
+        """Nothing has to be done to update bug tracker tools."""
 
     @abc.abstractproperty
     def base_url(self):
@@ -33,12 +33,10 @@ class BugTracker(Tool):
 
 class Github(BugTracker):
     """Github bug tracker tool."""
-    @property
-    def base_url(self):
-        return 'https://github.com/'
+    base_url = 'https://github.com/'
 
     @property
-    def bug_link(self, number=10):
+    def bug_link(self):
         return '%s%s/issues' % (self.base_url, self.project_name)
 
 
@@ -53,12 +51,12 @@ class Redmine(BugTracker):
         return self._base_url
 
     @property
-    def bug_link(self, number=10):
+    def bug_link(self):
         return '%sprojects/%s/issues' % (self.base_url, self.project_name)
 
 
 class BugLink(Role):
-    """List logs as a definition list."""
+    """Link to the bug tracker."""
     def run(self, name, rawtext, text, lineno, inliner, options=None,
             content=None):
         return [nodes.reference('', text, refuri=self.tool.bug_link)], []
