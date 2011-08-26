@@ -6,9 +6,9 @@ Module managing the projects configuration files.
 import yaml
 from docutils.parsers.rst import directives, roles
 
-from . import tool, bug_tracker, code_browser, vcs
+from . import tool, bug_tracker, code_browser, mailing_list, vcs
 
-TOOLS = [bug_tracker, code_browser, vcs]
+TOOLS = [bug_tracker, code_browser, mailing_list, vcs]
 
 
 def role_generator(role):
