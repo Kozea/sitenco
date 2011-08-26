@@ -6,9 +6,14 @@ Module managing the projects configuration files.
 import yaml
 from docutils.parsers.rst import directives, roles
 
-from . import tool, code_browser, vcs
+from . import tool, bug_tracker, code_browser, vcs
 
-TOOLS = [code_browser, vcs]
+TOOLS = [bug_tracker, code_browser, vcs]
+
+
+def role_generator(role):
+    """Closure function returning a role function."""
+    return lambda *args, **kwargs: role.run(*args, **kwargs)
 
 
 class Config(object):
@@ -43,8 +48,9 @@ class Config(object):
 
                 try:
                     tool_instance = tool_class(**self.config_tree[tool_type])
-                except:
+                except Exception, e:
                     print('Support for %s is disabled' % tool_type)
+                    print(e)
                     continue
                 self.tools[tool_type] = tool_instance
 
@@ -56,11 +62,8 @@ class Config(object):
                             directives.register_directive(
                                 class_name.lower(), cls)
                         elif issubclass(cls, tool.Role) and cls != tool.Role:
-                            role = cls()
-                            function = lambda *args, **kwargs: role.run(
-                                *args, **kwargs)
                             roles.register_canonical_role(
-                                class_name.lower(), function)
+                                class_name.lower(), role_generator(cls()))
 
     def get(self, folders, node=None):
         """Get the property at ``folders``."""
