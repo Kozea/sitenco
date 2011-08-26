@@ -26,7 +26,7 @@ class BugTracker(Tool):
         raise NotImplementedError
 
     @property
-    def bug_link(self, number=10):
+    def bug_link(self):
         """Link to the bug tracker interface."""
         raise NotImplementedError
 
