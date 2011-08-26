@@ -51,7 +51,8 @@ class Config(object):
                 for class_name in dir(tool_module):
                     cls = getattr(tool_module, class_name)
                     if isinstance(cls, type):
-                        if issubclass(cls, tool.Directive) and cls != tool.Directive:
+                        if issubclass(cls, tool.Directive) and \
+                               cls != tool.Directive:
                             directives.register_directive(
                                 class_name.lower(), cls)
                         elif issubclass(cls, tool.Role) and cls != tool.Role:
