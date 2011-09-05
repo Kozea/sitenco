@@ -5,8 +5,7 @@ Base tool class.
 
 import abc
 from flask import g
-from docutils.parsers.rst import (
-    directives as rest_directives, Directive as RestDirective)
+from docutils.parsers.rst import Directive as RestDirective
 
 
 class Tool(object):
