@@ -8,7 +8,7 @@ from docutils.parsers.rst import directives, roles
 
 from . import tool, bug_tracker, code_browser, mailing_list, vcs
 
-TOOLS = [bug_tracker, code_browser, mailing_list, vcs]
+TOOLS = [vcs, code_browser, bug_tracker, mailing_list]
 
 
 def role_generator(role):

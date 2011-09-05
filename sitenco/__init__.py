@@ -21,7 +21,7 @@ from flask import (
 
 from . import kalamarsite
 from .helpers import rest_to_article
-from .config import Config
+from .config import Config, TOOLS
 
 
 PROJECT_NAME = None
@@ -213,6 +213,16 @@ def static_file(folder, path):
         if os.path.isfile(os.path.join(base, filename)):
             return send_from_directory(base, filename)
     raise NotFound
+
+
+@app.route('/_update/<source_tool>')
+def update(source_tool):
+    """Update the tools."""
+    for tool in TOOLS:
+        tool_name = tool.__name__.split('.')[-1]
+        if tool_name in g.config.tools and tool_name != source_tool:
+            g.config.tools[tool_name].update()
+    return '%s updated' % g.project_name
 
 
 @app.route('/')

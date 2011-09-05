@@ -4,6 +4,7 @@ Bug tracker tools.
 """
 
 import abc
+import urllib
 from docutils import nodes
 
 from .tool import Tool, Role
@@ -45,6 +46,12 @@ class Redmine(BugTracker):
     def __init__(self, project_name, base_url):
         super(Redmine, self).__init__(project_name)
         self._base_url = base_url
+
+    def update(self):
+        """Update the local repository."""
+        repository_url = '%sprojects/%s/repository' % (
+            self._base_url, self.project_name)
+        urllib.urlopen(repository_url)
 
     @property
     def base_url(self):
