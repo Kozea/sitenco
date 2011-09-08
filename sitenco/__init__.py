@@ -215,7 +215,7 @@ def static_file(folder, path):
     raise NotFound
 
 
-@app.route('/_update/<source_tool>')
+@app.route('/_update/<source_tool>', methods=['GET', 'POST'])
 def update(source_tool):
     """Update the tools."""
     for tool in TOOLS:
