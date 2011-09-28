@@ -13,18 +13,18 @@ def create_site(path):
     """Create the Kalamar site"""
     page = Rest(
         FileSystem(
-            path, r'([a-z]*)/pages/(.*)\.rst', ('project', 'page')),
+            path, r'([^\._]*)/pages/(.*)\.rst', ('project', 'page')),
         [('title', RestProperty(unicode, TITLE))], 'content')
     news = Rest(
         FileSystem(
-            path, r'([a-z]*)/news/(.*)/(.*)\.rst',
+            path, r'([^\._]*)/news/(.*)/(.*)\.rst',
             ('project', 'writer', 'datetime')),
         [('title', RestProperty(unicode, TITLE))], 'content')
     tutorial = Cache(
         Rest(
             FileSystem(
                 path,
-                r'([a-z]*)/tutorials/(.*)\.rst', ('project', 'tutorial')),
+                r'([^\._]*)/tutorials/(.*)\.rst', ('project', 'tutorial')),
             [('title', RestProperty(unicode, TITLE)),
              ('abstract', RestProperty(unicode, '//topic/paragraph'))],
             'content'))
