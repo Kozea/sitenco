@@ -20,8 +20,9 @@ from flask import (
     Flask, Response, g, render_template, request, send_from_directory)
 
 from . import kalamarsite
-from .helpers import rest_to_article
+from .cache import cache, clean_cache
 from .config import Config, TOOLS
+from .helpers import rest_to_article
 
 
 PROJECT_NAME = None
@@ -89,6 +90,7 @@ def before_request():
 
 
 @app.route('/css/csstyle.css')
+@cache
 def csstyle_stylesheet():
     """CSS stylesheet created by CSStyle."""
     local_filename = os.path.join('static', 'css', 'style.css')
@@ -111,6 +113,7 @@ def csstyle_stylesheet():
 
 
 @app.route('/rss/')
+@cache
 def rss():
     """RSS feed."""
     news_items = SITE.search('news', {'project': g.project_name})
@@ -166,6 +169,7 @@ def rss():
 
 
 @app.route('/news/')
+@cache
 def news():
     """News."""
     news_items = list(SITE.search('news', {'project': g.project_name}))
@@ -176,6 +180,7 @@ def news():
 
 
 @app.route('/tutorials/<string:tuto>')
+@cache
 def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
@@ -195,6 +200,7 @@ def tutorial(tuto):
 
 
 @app.route('/tutorials/')
+@cache
 def tutorials():
     """Tutorials."""
     tutorials_items = SITE.search('tutorial', {'project': g.project_name})
@@ -216,6 +222,7 @@ def static_file(folder, path):
 
 
 @app.route('/_update/<source_tool>', methods=['GET', 'POST'])
+@clean_cache
 def update(source_tool):
     """Update the tools."""
     for tool in TOOLS:
@@ -227,6 +234,7 @@ def update(source_tool):
 
 @app.route('/')
 @app.route('/<page>/')
+@cache
 def default(page='home'):
     """Default page."""
     item = _open_or_404('page', {'page': page})
