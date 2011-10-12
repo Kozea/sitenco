@@ -185,18 +185,8 @@ def tutorial(tuto):
     """Tutorial."""
     item = _open_or_404('tutorial', {'tutorial': tuto})
     item.html = rest_to_article(item)
-    filename = os.path.join(
-        g.project_name, 'tutorials', '%s.html' % tuto)
-    if os.path.isfile(os.path.join(PATH, filename)):
-        return send_from_directory(PATH, filename)
-
     g.variables.update({'page_title': item['title'], 'tutorial': item})
-    response = render_template('tutorial.html.jinja2', **g.variables)
-
-    with open(os.path.join(PATH, filename), 'w') as stream:
-        stream.write(response)
-
-    return response
+    return render_template('tutorial.html.jinja2', **g.variables)
 
 
 @app.route('/tutorials/')
