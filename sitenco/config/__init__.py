@@ -49,9 +49,9 @@ class Config(object):
 
                 try:
                     tool_instance = tool_class(**self.config_tree[tool_type])
-                except Exception, e:
+                except Exception as exception:
                     print('Support for %s is disabled' % tool_type)
-                    print(e)
+                    print(exception)
                     continue
                 self.tools[tool_type] = tool_instance
 

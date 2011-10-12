@@ -26,7 +26,7 @@ class CodeBrowser(Tool):
         raise NotImplementedError
 
     @property
-    def code_link(self, number=10):
+    def code_link(self):
         """Link to the code browser interface."""
         return self.base_url + self.project_name
 
@@ -53,7 +53,7 @@ class Redmine(CodeBrowser):
 
 
 class CodeLink(Role):
-    """List logs as a definition list."""
+    """Link tag to the code browser."""
     def run(self, name, rawtext, text, lineno, inliner, options=None,
             content=None):
         return [nodes.reference('', text, refuri=self.tool.code_link)], []

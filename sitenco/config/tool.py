@@ -1,5 +1,5 @@
 """
-Base tool class.
+Base tool classes.
 
 """
 
@@ -9,6 +9,7 @@ from docutils.parsers.rst import Directive as RestDirective
 
 
 class Tool(object):
+    """Abstract class for external tools."""
     __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
@@ -18,15 +19,18 @@ class Tool(object):
 
 
 class Element(object):
+    """Abstract class for ReST elements."""
     __metaclass__ = abc.ABCMeta
 
     @property
     def tool(self):
+        """Tool related to the element."""
         tool_type = self.__class__.__module__.split('.')[-1]
         return g.config.tools[tool_type]
 
 
 class Directive(RestDirective, Element):
+    """Abstract class for ReST directives."""
     __metaclass__ = abc.ABCMeta
 
     required_arguments = 0
@@ -40,6 +44,7 @@ class Directive(RestDirective, Element):
 
 
 class Role(Element):
+    """Abstract class for ReST roles."""
     __metaclass__ = abc.ABCMeta
 
     def run(self, name, rawtext, text, lineno, inliner, options=None,

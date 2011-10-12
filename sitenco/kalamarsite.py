@@ -28,7 +28,7 @@ def create_site(path):
             [('title', RestProperty(unicode, TITLE)),
              ('abstract', RestProperty(unicode, '//topic/paragraph'))],
             'content'))
-                     
+
     site = kalamar.site.Site()
     site.register('page', page)
     site.register('news', news)
