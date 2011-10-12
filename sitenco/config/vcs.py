@@ -15,7 +15,7 @@ class VCS(Tool):
     """Abstract class for VCS tools."""
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, path, branch):
+    def __init__(self, path, branch, url=None):
         self.path = path
         self.branch = branch
         super(VCS, self).__init__()
@@ -28,7 +28,7 @@ class VCS(Tool):
 
 class Git(VCS):
     """Git tool."""
-    def __init__(self, path, branch='master'):
+    def __init__(self, path, branch='master', url=None):
         self._repository = brigit.Git(path)
         super(Git, self).__init__(path, branch)
 
