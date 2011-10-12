@@ -74,7 +74,7 @@ class UrlGet(Directive):
     def run(self):
         filename = os.path.join(ROOT, g.project_name, self.arguments[0])
         url = self.arguments[1]
-        parts =  filename.split('/')
+        parts = filename.split('/')
         cwd = '/'.join(parts[:-1])
         pipe = subprocess.Popen(
             ['python', filename, url], cwd=cwd, stdout=subprocess.PIPE)
