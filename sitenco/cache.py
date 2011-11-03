@@ -29,9 +29,12 @@ class cache(object):
             else:
                 content = answer
                 mimetype = 'text/html'
-            CACHE[key] = {'content': content, 'mimetype': mimetype}
+            self.set_cache(key, {'content': content, 'mimetype': mimetype})
 
         return Response(content, mimetype=mimetype)
+
+    def set_cache(self, key, value):
+        CACHE[key] = value
 
 
 class clean_cache(object):
