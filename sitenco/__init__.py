@@ -20,15 +20,15 @@ from flask import (
     Flask, Response, g, render_template, request, send_from_directory)
 
 from . import kalamarsite
-from .cache import cache, clean_cache
-from .config import Config, TOOLS
-from .helpers import rest_to_article
-
 
 PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, '..', 'projects')
 SITE = kalamarsite.create_site(PATH)
+
+from .cache import cache, clean_cache
+from .config import Config, TOOLS
+from .helpers import rest_to_article
 
 
 class ConfigRepository(object):

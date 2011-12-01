@@ -7,9 +7,12 @@ import yaml
 from docutils.parsers.rst import directives, roles
 
 from . import (
-    tool, bug_tracker, code_browser, continuous_integration, mailing_list, vcs)
+    tool, bug_tracker, code_browser, continuous_integration, mailing_list,
+    project, vcs)
 
-TOOLS = [vcs, code_browser, bug_tracker, continuous_integration, mailing_list]
+TOOLS = [
+    vcs, project, code_browser, bug_tracker, continuous_integration,
+    mailing_list]
 
 
 def role_generator(role):
