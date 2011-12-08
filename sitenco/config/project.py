@@ -21,3 +21,5 @@ class Project(vcs.VCS):
 
 class Git(Project, vcs.Git):
     """Git tool."""
+    def update(self):
+        self._repository.pull()
