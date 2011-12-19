@@ -4,8 +4,7 @@
 <section>
   <h2>Tutorials</h2>
 {% for tutorial in tutorials | sort %}
-  <h3><a href="/tutorials/{{ tutorial.tutorial }}">{{ tutorial.title }}</a></h3>
-  <p>{{ tutorial.abstract }}</p>
+  <h3><a href="/tutorials/{{ tutorial.id }}">{{ tutorial.title }}</a></h3>
 {% endfor %}
 </section>
 {% endblock content %}

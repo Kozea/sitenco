@@ -207,7 +207,9 @@ def tutorial(tuto):
 @cache
 def tutorials():
     """Tutorials."""
-    tutorials_items = _list_contents('tutorials')
+    tutorials_items = (
+        {'title': rest_title(_open_or_404(tuto)), 'id': os.path.basename(tuto)}
+        for tuto in _list_contents('tutorials'))
     g.variables.update(
         {'page_title': 'Tutorials', 'tutorials': tutorials_items})
     return render_template('tutorials.html.jinja2', **g.variables)
