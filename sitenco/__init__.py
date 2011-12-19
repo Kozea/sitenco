@@ -14,21 +14,18 @@ import csstyle
 import docutils
 import xml.etree.ElementTree as ET
 from datetime import datetime
-from kalamar.access_point import NotOneMatchingItem
 from werkzeug.exceptions import NotFound
 from flask import (
     Flask, Response, g, render_template, request, send_from_directory)
 
-from . import kalamarsite
 
 PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, '..', 'projects')
-SITE = kalamarsite.create_site(PATH)
 
 from .cache import cache, clean_cache
 from .config import Config, TOOLS
-from .helpers import rest_to_article
+from .helpers import rest_to_article, rest_title
 
 
 class ConfigRepository(object):
@@ -65,13 +62,32 @@ CONFIG = ConfigRepository()
 app = Flask(__name__, static_path=None)
 
 
-def _open_or_404(access_point, condition):
-    """Return an item or raise 404."""
-    condition['project'] = g.project_name
+def _open_or_404(type_or_filename, page_name=None):
+    """Return content or raise 404."""
+    if type_or_filename.startswith('/'):
+        filename = '%s.rst' % type_or_filename
+    else:
+        filename = os.path.join(
+            PATH, g.project_name, type_or_filename, '%s.rst' % page_name)
     try:
-        return SITE.open(access_point, condition)
-    except NotOneMatchingItem:
+        return open(filename).read()
+    except IOError:
         raise NotFound
+
+
+def _list_contents(content_type):
+    """List the content of type ``content_type``."""
+    folder = os.path.join(PATH, g.project_name, content_type)
+    for filename in os.listdir(folder):
+        yield os.path.join(folder, os.path.splitext(filename)[0])
+
+
+def _list_news():
+    """List the content of type ``content_type``."""
+    folder = os.path.join(PATH, g.project_name, "news")
+    for user in os.listdir(folder):
+        for filename in os.listdir(os.path.join(folder, user)):
+            yield os.path.join(folder, user, os.path.splitext(filename)[0])
 
 
 @app.template_filter()
@@ -116,10 +132,7 @@ def csstyle_stylesheet():
 @cache
 def rss():
     """RSS feed."""
-    news_items = SITE.search('news', {'project': g.project_name})
-    ordered_news = {}
-    for new in news_items:
-        ordered_news[new['datetime']] = new
+    ordered_news = {name: _open_or_404(name) for name in _list_news()}
 
     tree = ET.Element('rss', {'version': '2.0'})
     channel = ET.Element('channel')
@@ -135,28 +148,29 @@ def rss():
     link.text = request.host_url
     channel.append(link)
 
-    for date, new in sorted(ordered_news.items(), reverse=True):
-        id_string = new['datetime']
+    for filename, new in sorted(ordered_news.items(), reverse=True):
+        date = os.path.basename(filename)
+        id_string = date
         url = "%snews#%s" % (request.host_url, id_string)
         item = ET.Element('item')
         channel.append(item)
         title = ET.Element('title')
-        title.text = new['title']
+        title.text = rest_title(new)
         item.append(title)
         guid = ET.Element('guid')
         guid.text = str(hash(new))
         item.append(guid)
-        date = ET.Element('pubDate')
-        date.text = datetime.strptime(
-            new['datetime'], '%Y-%m-%d@%H:%M:%S').strftime(
+        pubdate = ET.Element('pubDate')
+        pubdate.text = datetime.strptime(
+            date, '%Y-%m-%d@%H:%M:%S').strftime(
             '%a, %d %b %Y %H:%M:%S +0000')
-        item.append(date)
+        item.append(pubdate)
         link = ET.Element('link')
         link.text = url
         item.append(link)
 
         parts = docutils.core.publish_parts(
-            source=new['content'].read(),
+            source=new,
             writer=docutils.writers.html4css1.Writer(),
             settings_overrides={
                 'initial_header_level': 2, 'doctitle_xform': 0})
@@ -172,10 +186,11 @@ def rss():
 @cache
 def news():
     """News."""
-    news_items = list(SITE.search('news', {'project': g.project_name}))
-    for item in news_items:
-        item.html = rest_to_article(item, level=4)
-    g.variables.update({'page_title': 'News', 'news': news_items})
+    g.variables.update({
+        'page_title': 'News',
+        'news': ({'datetime': os.path.basename(new),
+                  'html': rest_to_article(_open_or_404(new), level=4)}
+                 for new in _list_news())})
     return render_template('news.html.jinja2', **g.variables)
 
 
@@ -183,9 +198,8 @@ def news():
 @cache
 def tutorial(tuto):
     """Tutorial."""
-    item = _open_or_404('tutorial', {'tutorial': tuto})
-    item.html = rest_to_article(item)
-    g.variables.update({'page_title': item['title'], 'tutorial': item})
+    item = rest_to_article(_open_or_404('tutorials', tuto))
+    g.variables.update({'page_title': rest_title(item), 'tutorial': item})
     return render_template('tutorial.html.jinja2', **g.variables)
 
 
@@ -193,7 +207,7 @@ def tutorial(tuto):
 @cache
 def tutorials():
     """Tutorials."""
-    tutorials_items = SITE.search('tutorial', {'project': g.project_name})
+    tutorials_items = _list_contents('tutorials')
     g.variables.update(
         {'page_title': 'Tutorials', 'tutorials': tutorials_items})
     return render_template('tutorials.html.jinja2', **g.variables)
@@ -227,7 +241,6 @@ def update(source_tool):
 @cache
 def default(page='home'):
     """Default page."""
-    item = _open_or_404('page', {'page': page})
-    item.html = rest_to_article(item)
-    g.variables.update({'page': item, 'page_title': item['title']})
+    item = rest_to_article(_open_or_404('pages', page))
+    g.variables.update({'page': item, 'page_title': rest_title(item)})
     return render_template('page.html.jinja2', **g.variables)

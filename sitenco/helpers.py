@@ -114,10 +114,10 @@ directives.register_directive('pyexec', PyResult)
 directives.register_directive('werkzeugurl', UrlGet)
 
 
-def rest_to_article(item, level=3, item_prop='content'):
-    """Convert ``item`` to HTML article."""
+def rest_to_article(text, level=3):
+    """Convert ReST ``text`` to HTML article."""
     parts = docutils.core.publish_parts(
-        source=item[item_prop].read(), writer=Writer(),
+        source=text, writer=Writer(),
         settings_overrides={'initial_header_level': level})
 
     # Post-production modification of generated document
@@ -144,3 +144,9 @@ def rest_to_article(item, level=3, item_prop='content'):
             if attrib in element.attrib:
                 del element.attrib[attrib]
     return ElementTree.tostring(tree).replace('@', u'&#64;')
+
+
+def rest_title(text):
+    """Get the title of a ReST ``text``."""
+    return docutils.core.publish_parts(
+        source=text, writer=Writer())['title']

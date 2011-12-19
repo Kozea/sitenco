@@ -2,7 +2,7 @@
 
 {% block content %}
 <a id="rss" href="/rss" title="RSS Feed">RSS Feed</a>
-{% for datetime, items in news|groupby('datetime')|sort(True) %}
+{% for datetime, items in news | groupby('datetime') | sort(True) %}
 <section>
 <h2>{{ datetime | pretty_datetime }}</h2>
 {% for item in items %}
