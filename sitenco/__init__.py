@@ -100,7 +100,10 @@ def pretty_datetime(datetime_string):
 @app.before_request
 def before_request():
     """Set variables before each request."""
-    g.project_name = PROJECT_NAME or request.host.split('.')[-2]
+    host_parts = request.host.split('.')
+    if 'www' in host_parts:
+        host_parts.remove('www')
+    g.project_name = PROJECT_NAME or host_parts[0]
     g.config = CONFIG[g.project_name]
     g.variables = CONFIG[g.project_name].config_tree.copy()
 
