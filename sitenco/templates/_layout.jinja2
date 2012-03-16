@@ -1,49 +1,49 @@
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta charset="UTF-8"/>
-  <title>{{ name }} - {{ description }} {%- if page_title|d %} - {{ page_title }}{% endif %}</title>
-  <link href="/css/shared.css" media="screen" type="text/css" rel="stylesheet" />
-  <link href="/css/style.css" media="screen" type="text/css" rel="stylesheet" />
-  <link href="/css/img/icon.png" type="image/png" rel="shortcut icon" />
-  <link href="/rss" type="application/rss+xml" rel="alternate" title="{{ title }} RSS 2.0" />
-  <script src="/js/prefixfree.min.js"></script>
-  <script type="text/javascript">
-    (function() {
+<!DOCTYPE html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>{{ name }} - {{ description }} {%- if page_title|d %} - {{ page_title }}{% endif %}</title>
+    <link href="/css/shared.css" media="screen" type="text/css" rel="stylesheet" />
+    <link href="/css/style.css" media="screen" type="text/css" rel="stylesheet" />
+    <link href="/css/img/icon.png" type="image/png" rel="shortcut icon" />
+    <link href="/rss" type="application/rss+xml" rel="alternate" title="{{ title }} RSS 2.0" />
+    <script src="/js/prefixfree.min.js"></script>
+    <script type="text/javascript">
+      (function() {
       var d=document,t='script',p=d.createElement(t),s=d.getElementsByTagName(t)[0];
       p.type='text/javascript';p.async=true;p.src="http://pystil.org/pystil.js";s.parentNode.insertBefore(p,s);
-    })();
-  </script>
-  <!--[if lt IE 9]>
-  <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-  <![endif]-->
-</head>
+      })();
+    </script>
+    <!--[if lt IE 9]>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+  </head>
 
-<body>
-  <header>
-    <h1><a href="/">{{ name }}</a></h1>
-  </header>
+  <body>
+    <header>
+      <h1><a href="/">{{ name }}</a></h1>
+    </header>
 
-  <nav>
-    <ul>
-{% for item in menu %}
-{% set name, element = item.items()[0] %}
-{% set active = element.link != request.path %}
-      <li>
-        <a{% if active %} href="{{ element.link }}"{% endif %}>{{ name }}</a>
-      </li>
-{% endfor %}   
-    </ul>
-  </nav>
+    <nav>
+      <ul>
+        {% for item in menu %}
+          {% set name, element = item.items()[0] %}
+          {% set active = element.link != request.path %}
+          <li>
+            <a{% if active %} href="{{ element.link }}"{% endif %}>{{ name }}</a>
+          </li>
+        {% endfor %}   
+      </ul>
+    </nav>
 
-{% block content %}{% endblock content %}
+    {% block content %}{% endblock content %}
 
-  <footer>
-    <ul>
-      <li><a href="http://community.kozea.org/">A Kozea Project</a></li>
-      <li><a href="http://validator.w3.org/check?uri=referer">Optimized for Standards</a></li>
-    </ul>
-  </footer>
-</body>
+    <footer>
+      <ul>
+        <li><a href="http://community.kozea.org/">A Kozea Project</a></li>
+        <li><a href="http://validator.w3.org/check?uri=referer">Optimized for Standards</a></li>
+      </ul>
+    </footer>
+  </body>
 
 </html>

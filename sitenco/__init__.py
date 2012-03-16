@@ -24,7 +24,7 @@ PATH = os.path.join(SITE_ROOT, '..', 'projects')
 
 from .cache import cache, clean_cache
 from .config import Config, TOOLS
-from .helpers import rest_to_article, rest_title
+from .helpers import rest_to_article
 
 
 class ConfigRepository(object):
@@ -72,13 +72,6 @@ def _open_or_404(type_or_filename, page_name=None):
         return open(filename).read()
     except IOError:
         raise NotFound
-
-
-def _list_contents(content_type):
-    """List the content of type ``content_type``."""
-    folder = os.path.join(PATH, g.project_name, content_type)
-    for filename in os.listdir(folder):
-        yield os.path.join(folder, os.path.splitext(filename)[0])
 
 
 def _list_news():
@@ -134,7 +127,6 @@ def rss():
         item = ET.Element('item')
         channel.append(item)
         title = ET.Element('title')
-        title.text = rest_title(new)
         item.append(title)
         guid = ET.Element('guid')
         guid.text = str(hash(new))
@@ -154,6 +146,7 @@ def rss():
             settings_overrides={
                 'initial_header_level': 2, 'doctitle_xform': 0})
         description_text = parts['fragment']
+        title.text = parts['title']
         description = ET.Element('description')
         description.text = description_text
         item.append(description)
@@ -168,30 +161,10 @@ def news():
     g.variables.update({
         'page_title': 'News',
         'news': ({'datetime': os.path.basename(new),
-                  'html': rest_to_article(_open_or_404(new), level=4)}
+                  'html': rest_to_article(
+                      _open_or_404(new), level=3)['article']}
                  for new in _list_news())})
     return render_template('news.html.jinja2', **g.variables)
-
-
-@app.route('/tutorials/<string:tuto>')
-@cache
-def tutorial(tuto):
-    """Tutorial."""
-    item = rest_to_article(_open_or_404('tutorials', tuto))
-    g.variables.update({'page_title': rest_title(item), 'tutorial': item})
-    return render_template('tutorial.html.jinja2', **g.variables)
-
-
-@app.route('/tutorials/')
-@cache
-def tutorials():
-    """Tutorials."""
-    tutorials_items = (
-        {'title': rest_title(_open_or_404(tuto)), 'id': os.path.basename(tuto)}
-        for tuto in _list_contents('tutorials'))
-    g.variables.update(
-        {'page_title': 'Tutorials', 'tutorials': tutorials_items})
-    return render_template('tutorials.html.jinja2', **g.variables)
 
 
 @app.route('/<folder>/<path:path>')
@@ -223,5 +196,5 @@ def update(source_tool):
 def default(page='home'):
     """Default page."""
     item = rest_to_article(_open_or_404('pages', page))
-    g.variables.update({'page': item, 'page_title': rest_title(item)})
+    g.variables.update({'page': item['article'], 'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)

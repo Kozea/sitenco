@@ -4,7 +4,6 @@ Various Helpers
 """
 
 import docutils.core
-from docutils.writers.html4css1 import Writer
 from docutils.parsers.rst import directives, Directive
 
 import os
@@ -14,8 +13,10 @@ from pygments.formatters import HtmlFormatter
 from pygments.style import Style
 from pygments.token import Keyword, Name, Comment, String, Error, Number
 import subprocess
-from xml.etree import ElementTree
+from docutils_html5 import Writer
 from flask import g
+from traceback import format_exc
+import pygal
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'projects')
 
@@ -108,45 +109,67 @@ class PyResult(Directive):
         content = '<pre class="script-output">%s</pre>' % content
         return [docutils.nodes.raw('', content, format='html')]
 
+
+class Pygal(Directive):
+    """Execute the given python file and puts its result in the document."""
+    required_arguments = 0
+    optional_arguments = 2
+    final_argument_whitespace = True
+    has_content = True
+
+    def run(self):
+        width, height = map(int, self.arguments) if len(
+            self.arguments) == 2 else (600, 400)
+        code = '\n'.join(self.content)
+        locals = {'pygal': pygal}
+        exec(code, {}, locals)
+        chart = None
+        for value in locals.values():
+            if isinstance(value, pygal.graph.graph.Graph):
+                chart = value
+                break
+        if chart == None:
+            return [docutils.nodes.system_message(
+                'No instance of graph found', level=3)]
+        chart.disable_xml_declaration = True
+        chart.config.width = width
+        chart.config.height = height
+        chart.explicit_size = True
+        try:
+            svg = chart.render()
+        except Exception:
+            return [docutils.nodes.system_message(
+                'An exception as occured during graph generation:'
+                ' \n %s' % format_exc(),
+            level=3)]
+        return [docutils.nodes.raw('', svg, format='html')]
+
+
+class PygalWithCode(Pygal):
+    width_code = True
+
+    def run(self):
+        node_list = super(PygalWithCode, self).run()
+        lexer = get_lexer_by_name('python')
+        code = u'\n'.join(self.content)
+        formatter = HtmlFormatter(
+            noclasses=True, nobackground=True, style=PygmentsStyle)
+        parsed = pygments.highlight(code, lexer, formatter)
+        node_list.append(
+            docutils.nodes.caption(
+                '', '', docutils.nodes.raw('', parsed, format='html')))
+        return [docutils.nodes.figure('', *node_list)]
+
 directives.register_directive('pycode', Pygments)
 directives.register_directive('code-block', InlinePygments)
 directives.register_directive('pyexec', PyResult)
 directives.register_directive('werkzeugurl', UrlGet)
+directives.register_directive('pygal', Pygal)
+directives.register_directive('pygal-code', PygalWithCode)
 
 
-def rest_to_article(text, level=3):
+def rest_to_article(text, level=2):
     """Convert ReST ``text`` to HTML article."""
-    parts = docutils.core.publish_parts(
+    return docutils.core.publish_parts(
         source=text, writer=Writer(),
         settings_overrides={'initial_header_level': level})
-
-    # Post-production modification of generated document
-    text = parts['html_body']
-    # Escaping non-breaking spaces is a strange behavior in docutils, a todo
-    # exists in docutils.writers.html4css1.HTMLTranslator.encode. ElementTree
-    # does not like &nbsp; so we change it by the real unicode chacarter.
-    text = text.replace('&nbsp;', u'\xa0')
-    tree = ElementTree.fromstring(text.encode('utf-8'))
-    for element in tree.getiterator():
-        if element.tag == 'div' and element.get('class') == 'document':
-            element.tag = 'article'
-        elif element.tag == 'tt':
-            element.tag = 'code'
-        elif element.tag == 'tbody':
-            if 'valign' in element.attrib:
-                del element.attrib['valign']
-        elif element.tag == 'div' and element.get('class') == 'section':
-            element.tag = 'section'
-        elif element.tag == 'h1' and element.get('class') == 'title':
-            element.tag = 'h%i' % (level - 1)
-
-        for attrib in ('frame', 'rules', 'border', 'width', 'valign'):
-            if attrib in element.attrib:
-                del element.attrib[attrib]
-    return ElementTree.tostring(tree).replace('@', u'&#64;')
-
-
-def rest_title(text):
-    """Get the title of a ReST ``text``."""
-    return docutils.core.publish_parts(
-        source=text, writer=Writer())['title']
