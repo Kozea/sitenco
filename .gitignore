@@ -2,3 +2,4 @@
 *.egg-info
 projects/*
 sitenco/static/src/*
+/env

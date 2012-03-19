@@ -1,3 +1,7 @@
--e git+git://github.com/Kozea/brigit.git#egg=brigit
--e git+git://github.com/Kozea/log_colorizer.git#egg=log_colorizer
--e .
+git+git://github.com/Kozea/brigit.git
+git+git://github.com/Kozea/log_colorizer.git
+git+git://github.com/Kozea/docutils-html5-writer.git
+Flask
+Pygal
+PyYAML
+Pygments
