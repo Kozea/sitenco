@@ -122,7 +122,13 @@ class Pygal(Directive):
             self.arguments) == 2 else (600, 400)
         code = '\n'.join(self.content)
         locals = {'pygal': pygal}
-        exec(code, {}, locals)
+        try:
+            exec(code, {}, locals)
+        except Exception:
+            return [docutils.nodes.system_message(
+                'An exception as occured during code parsing:'
+                ' \n %s' % format_exc(),
+            level=3)]
         chart = None
         for value in locals.values():
             if isinstance(value, pygal.graph.graph.Graph):
