@@ -142,7 +142,9 @@ class Pygal(Directive):
         chart.config.height = height
         chart.explicit_size = True
         try:
-            svg = chart.render()
+            svg = (chart.render().encode('utf-8')
+                   .encode('base64').replace('\n', ''))
+            svg = '<embed src="data:image/svg+xml;base64,%s"></embed>' % svg
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
