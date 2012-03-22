@@ -52,13 +52,14 @@ class Pygments(Directive):
 
 class InlinePygments(Directive):
     """Inline code sytax highlighting."""
-    required_arguments = 1
-    optional_arguments = 0
+    required_arguments = 0
+    optional_arguments = 1
     final_argument_whitespace = True
     has_content = True
 
     def run(self):
-        lexer = get_lexer_by_name(self.arguments[0])
+        lexer = get_lexer_by_name(self.arguments[0]
+                                  if len(self.arguments) == 1 else 'python')
         code = u'\n'.join(self.content)
         formatter = HtmlFormatter(
             noclasses=True, nobackground=True, style=PygmentsStyle)
@@ -137,14 +138,14 @@ class Pygal(Directive):
         if chart == None:
             return [docutils.nodes.system_message(
                 'No instance of graph found', level=3)]
-        chart.disable_xml_declaration = True
         chart.config.width = width
         chart.config.height = height
         chart.explicit_size = True
         try:
-            svg = (chart.render().encode('utf-8')
+            svg = (chart.render()
                    .encode('base64').replace('\n', ''))
-            svg = '<embed src="data:image/svg+xml;base64,%s"></embed>' % svg
+            svg = ('<embed src="data:image/svg+xml;charset=utf-8;base64,%s">'
+                   '</embed>') % svg
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
