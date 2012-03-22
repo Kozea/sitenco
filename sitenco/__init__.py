@@ -10,7 +10,8 @@ Simple websites for simple projects.
 """
 
 import os.path
-import docutils
+import docutils.core
+import docutils.writers.html4css1
 import xml.etree.ElementTree as ET
 from datetime import datetime
 from werkzeug.exceptions import NotFound
