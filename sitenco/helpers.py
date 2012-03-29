@@ -144,8 +144,8 @@ class Pygal(Directive):
         try:
             svg = (chart.render()
                    .encode('base64').replace('\n', ''))
-            svg = ('<embed src="data:image/svg+xml;charset=utf-8;base64,%s">'
-                   '</embed>') % svg
+            svg = ('<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
+            ) % svg
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
