@@ -18,3 +18,26 @@ a {
   padding: 0;
   width: 32px;
 }
+
+article footer {
+  font-size: 0.8em;
+  opacity: 0.7;
+  padding-left: 20px;
+}
+
+article footer div {
+  padding: 0.2em;
+}
+
+article footer div > a:first-child {
+  margin-right: 0.5em;
+}
+
+article footer div > * {
+  display: inline;
+}
+
+.ref {
+  font-size: x-small;
+  vertical-align: top;
+}
