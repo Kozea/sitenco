@@ -163,7 +163,7 @@ def news():
         'page_title': 'News',
         'news': ({'datetime': os.path.basename(new),
                   'html': rest_to_article(
-                      _open_or_404(new), level=3)['article']}
+                      _open_or_404(new), level=3)['article'].decode('utf-8')}
                  for new in _list_news())})
     return render_template('news.html.jinja2', **g.variables)
 
@@ -197,5 +197,7 @@ def update(source_tool):
 def default(page='home'):
     """Default page."""
     item = rest_to_article(_open_or_404('pages', page))
-    g.variables.update({'page': item['article'], 'page_title': item['title']})
+    g.variables.update({
+        'page': item['article'].decode('utf-8'),
+        'page_title': item['title'].decode('utf-8')})
     return render_template('page.html.jinja2', **g.variables)
