@@ -199,5 +199,5 @@ def default(page='home'):
     item = rest_to_article(_open_or_404('pages', page))
     g.variables.update({
         'page': item['article'].decode('utf-8'),
-        'page_title': item['title'].decode('utf-8')})
+        'page_title': item['title']})
     return render_template('page.html.jinja2', **g.variables)
