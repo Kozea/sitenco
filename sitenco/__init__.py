@@ -200,4 +200,4 @@ def default(page='home'):
     g.variables.update({
         'page': item['article'].decode('utf-8'),
         'page_title': item['title']})
-    return render_template('page.html.jinja2', **g.variables)
+    return render_template('page.html.jinja2', pagename=page, **g.variables)
