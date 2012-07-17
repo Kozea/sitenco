@@ -25,15 +25,16 @@
     </header>
 
     <nav>
-      <ul>
-        {% for item in menu %}
+      {% for item in menu recursive %}
+        {% if loop.first %}<ul>{% endif %}
           {% set name, element = item.items()[0] %}
           {% set active = element.link != request.path %}
           <li>
             <a{% if active %} href="{{ element.link }}"{% endif %}>{{ name }}</a>
+            {{ loop(element.menu) }}
           </li>
-        {% endfor %}   
-      </ul>
+        {% if loop.last %}</ul>{% endif %}
+      {% endfor %}
     </nav>
 
     {% block content %}{% endblock content %}
