@@ -41,3 +41,15 @@ article footer div > * {
   font-size: x-small;
   vertical-align: top;
 }
+
+@media print {
+    body > nav > *, body > footer {
+        display: none;
+    }
+    html, body, body {
+        background: none !important;
+    }
+    .highlight {
+        page-break-inside: avoid;
+    }
+}
