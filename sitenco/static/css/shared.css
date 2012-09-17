@@ -54,3 +54,25 @@ article footer div > * {
         font-size: 90%;
     }
 }
+
+.ribbon {
+  background: linear-gradient(#000, #111);
+  overflow: hidden;
+  position: fixed;
+  right: -3em;
+  top: 2em;
+  transform: rotate(45deg);
+  box-shadow: 0 0 1em #888;
+}
+
+.ribbon a {
+  font: bold .65em sans-serif;
+  border: 1px solid #ccc;
+  color: #fff;
+  display: block;
+  margin: 0.05em 0 0.075em 0;
+  padding: 0.5em 3.5em;
+  text-align: center;
+  text-decoration: none;
+  text-shadow: 0 0 0.5em #444;
+}
