@@ -84,10 +84,12 @@ def _list_news():
 
 
 @app.template_filter()
-def pretty_datetime(datetime_string):
+def pretty_datetime(datetime_string, format_=None):
     """Convert an internal datetime string to a pretty date."""
-    return datetime.strptime(
-        datetime_string, '%Y-%m-%d@%H:%M:%S').strftime('%A, %B %-d %Y')
+    date = datetime.strptime(datetime_string, '%Y-%m-%d@%H:%M:%S')
+    if format_ == "_iso_":
+        return date.isoformat()
+    return date.strftime(format_ or '%A, %B %-d %Y')
 
 
 @app.before_request
@@ -135,7 +137,7 @@ def rss():
         pubdate = ET.Element('pubDate')
         pubdate.text = datetime.strptime(
             date, '%Y-%m-%d@%H:%M:%S').strftime(
-            '%a, %d %b %Y %H:%M:%S +0000')
+                '%a, %d %b %Y %H:%M:%S +0000')
         item.append(pubdate)
         link = ET.Element('link')
         link.text = url
@@ -144,15 +146,17 @@ def rss():
         parts = docutils.core.publish_parts(
             source=new,
             writer=docutils.writers.html4css1.Writer(),
-            settings_overrides={
-                'initial_header_level': 2, 'doctitle_xform': 0})
+            settings_overrides={'initial_header_level': 2})
         description_text = parts['fragment']
         title.text = parts['title']
         description = ET.Element('description')
         description.text = description_text
         item.append(description)
 
-    return Response(ET.tostring(tree, 'utf-8'), mimetype='application/rss+xml')
+    return Response(
+        '<?xml version="1.0" encoding="UTF-8" ?>\n' +
+        ET.tostring(tree, 'utf-8', method='xml'),
+        mimetype='application/rss+xml')
 
 
 @app.route('/news/')

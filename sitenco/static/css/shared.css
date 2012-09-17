@@ -76,3 +76,10 @@ article footer div > * {
   text-decoration: none;
   text-shadow: 0 0 0.5em #444;
 }
+
+h2 small {
+  float: right;
+  opacity: 0.8;
+  font-size: 0.8em;
+  line-height: 1.5em;
+}

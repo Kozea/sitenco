@@ -2,12 +2,15 @@
 
 {% block content %}
   <a id="rss" href="/rss" title="RSS Feed">RSS Feed</a>
-  {% for datetime, items in news | groupby('datetime') | sort(True) %}
-    <section>
-      <h2>{{ datetime | pretty_datetime }}</h2>
-      {% for item in items %}
-        {{ item.html | safe }}
-      {% endfor %}
+  {% for item in news | sort(True) %}
+    <section id="{{ item.datetime }}">
+      <h2>
+        <time datetime="{{ item.datetime | pretty_datetime("_iso_") }}">
+          {{ item.datetime | pretty_datetime }}
+          <small>{{ item.datetime | pretty_datetime('%H:%M') }}</small>
+        </time>
+      </h2>
+      {{ item.html | safe }}
     </section>
   {% endfor %}
 {% endblock content %}
