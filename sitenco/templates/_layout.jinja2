@@ -50,6 +50,13 @@
         {% endfor %}
       </ul>
     </footer>
+
+    {% if ribbon %}
+      <aside class="ribbon">
+        <a href="{{ ribbon.url }}">Fork me on GitHub</a>
+      </aside>
+    {% endif %}
+
   </body>
 
 </html>

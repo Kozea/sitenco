@@ -129,13 +129,13 @@ class Pygal(Directive):
             return [docutils.nodes.system_message(
                 'An exception as occured during code parsing:'
                 ' \n %s' % format_exc(),
-            level=3)]
+                level=3)]
         chart = None
         for value in locals.values():
-            if isinstance(value, pygal.graph.graph.Graph):
+            if isinstance(value, pygal.ghost.Ghost):
                 chart = value
                 break
-        if chart == None:
+        if chart is None:
             return [docutils.nodes.system_message(
                 'No instance of graph found', level=3)]
         chart.config.width = width
@@ -144,13 +144,14 @@ class Pygal(Directive):
         try:
             svg = (chart.render()
                    .encode('base64').replace('\n', ''))
-            svg = ('<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
+            svg = (
+                '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
             ) % svg
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
                 ' \n %s' % format_exc(),
-            level=3)]
+                level=3)]
         return [docutils.nodes.raw('', svg, format='html')]
 
 
