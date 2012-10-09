@@ -22,6 +22,7 @@ from flask import (
 PROJECT_NAME = None
 SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, '..', 'projects')
+DOCS_PATH = os.path.join(SITE_ROOT, '..', 'docs')
 
 from .cache import cache, clean_cache
 from .config import Config, TOOLS
@@ -182,6 +183,19 @@ def static_file(folder, path):
         if os.path.isfile(os.path.join(base, filename)):
             return send_from_directory(base, filename)
     raise NotFound
+
+
+@app.route('/docs/', defaults={'path': ''})
+@app.route('/docs/<path:path>')
+def sphinx_docs(path):
+    """Sphinx docs."""
+    tool = g.config.tools.get('sphinx')
+    if not tool:
+        raise NotFound
+    if path.endswith('/') or not path:
+        path += 'index.html'
+    return send_from_directory(
+        os.path.join(tool.path, 'docs', '_build', 'dirhtml'), path)
 
 
 @app.route('/_update/<source_tool>', methods=['GET', 'POST'])
