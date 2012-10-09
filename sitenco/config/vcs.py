@@ -18,6 +18,7 @@ class VCS(Tool):
     def __init__(self, path, branch, url=None):
         self.path = path
         self.branch = branch
+        self.url = url
         super(VCS, self).__init__()
 
     @abc.abstractmethod
@@ -29,8 +30,8 @@ class VCS(Tool):
 class Git(VCS):
     """Git tool."""
     def __init__(self, path, branch='master', url=None):
-        self._repository = brigit.Git(path)
-        super(Git, self).__init__(path, branch)
+        super(Git, self).__init__(path, branch, url)
+        self._repository = brigit.Git(path, remote=self.url)
 
     def log(self, number=10):
         commits = "%s~%i..%s" % (self.branch, number, self.branch)
