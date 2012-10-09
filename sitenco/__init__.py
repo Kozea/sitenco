@@ -16,7 +16,8 @@ import xml.etree.ElementTree as ET
 from datetime import datetime
 from werkzeug.exceptions import NotFound
 from flask import (
-    Flask, Response, g, render_template, request, send_from_directory)
+    Flask, Response, g, render_template, request, send_from_directory,
+    redirect)
 
 
 PROJECT_NAME = None
@@ -214,6 +215,9 @@ def update(source_tool):
 @cache
 def default(page='home'):
     """Default page."""
+    redirect_url = g.variables.get('redirects', {}).get(request.path)
+    if redirect_url:
+        return redirect(redirect_url)
     item = rest_to_article(_open_or_404('pages', page))
     g.variables.update({
         'page': item['article'].decode('utf-8'),
