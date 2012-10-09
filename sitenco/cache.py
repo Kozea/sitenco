@@ -2,7 +2,8 @@
 Cache mechanisms.
 
 """
-from flask import g, Response
+from flask import g, current_app
+from werkzeug.wrappers import BaseResponse
 
 
 CACHE = {}
@@ -18,20 +19,12 @@ class cache(object):
         key = g.project_name, self.rule, tuple(
             (key, kwargs[key]) for key in sorted(kwargs.keys()))
 
-        if key in CACHE:
-            content = CACHE[key]['content']
-            mimetype = CACHE[key]['mimetype']
-        else:
-            answer = self.rule(**kwargs)
-            if isinstance(answer, Response):
-                content = answer.data
-                mimetype = answer.mimetype
-            else:
-                content = answer
-                mimetype = 'text/html'
-            self.set_cache(key, {'content': content, 'mimetype': mimetype})
+        response = CACHE.get(key)
+        if not response:
+            response = current_app.make_response(self.rule(**kwargs))
+            self.set_cache(key, response)
 
-        return Response(content, mimetype=mimetype)
+        return response
 
     def set_cache(self, key, value):
         CACHE[key] = value
