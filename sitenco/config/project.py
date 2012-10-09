@@ -22,4 +22,5 @@ class Project(vcs.VCS):
 class Git(Project, vcs.Git):
     """Git tool."""
     def update(self):
-        self._repository.pull()
+        self._repository.fetch()
+        self._repository.reset('--hard', 'origin/' + self.branch)
