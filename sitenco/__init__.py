@@ -80,6 +80,8 @@ def _open_or_404(type_or_filename, page_name=None):
 def _list_news():
     """List the content of type ``content_type``."""
     folder = os.path.join(PATH, g.project_name, "news")
+    if not os.path.isdir(folder):
+        raise NotFound
     for user in os.listdir(folder):
         for filename in os.listdir(os.path.join(folder, user)):
             yield os.path.join(folder, user, os.path.splitext(filename)[0])
