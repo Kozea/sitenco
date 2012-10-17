@@ -43,7 +43,14 @@
       <ul>
         {% for item in footer %}
           {% set name, element = item.items()[0] %}
-          <li><a href="{{ element.link }}">{{ name }}</a></li>
+          <li><a href="{{ element.link }}">
+            {%- if element.image|d -%}
+                <img src="{{ element.image }}" alt="{{ name
+                    }}" title="{{ name }}">
+            {%- else -%}
+                {{ name }}
+            {%- endif -%}
+            </a></li>
         {% else %}
           <li><a href="http://community.kozea.org/">A Kozea Project</a></li>
           <li><a href="http://validator.w3.org/check?uri=referer">Optimized for Standards</a></li>
