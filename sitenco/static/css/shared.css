@@ -7,8 +7,8 @@ a {
   text-decoration: none;
 }
 
-#rss {
-  background: black url(rss.png) -1px 1px no-repeat;
+#rss, #editable {
+  background: black -1px 1px no-repeat;
   border-radius: 6px;
   color: transparent;
   display: block;
@@ -17,6 +17,14 @@ a {
   outline: 0;
   padding: 0;
   width: 32px;
+}
+
+#rss {
+  background-image: url(rss.png);
+}
+
+#editable {
+  background-image: url(editable.png);
 }
 
 article footer {
