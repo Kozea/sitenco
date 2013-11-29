@@ -220,5 +220,6 @@ def default(page='home'):
     if redirect_url:
         return redirect(redirect_url)
     item = rest_to_article(_open_or_404('pages', page))
-    g.variables.update({'page': item['article'], 'page_title': item['title']})
+    g.variables.update(
+        {'page': item['article'].decode('utf-8'), 'page_title': item['title']})
     return render_template('page.html.jinja2', pagename=page, **g.variables)
