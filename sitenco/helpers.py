@@ -195,8 +195,10 @@ directives.register_directive('pygal-code', PygalWithCode)
 directives.register_directive('pygal-sparkline', PygalWithCode)
 
 
-def rest_to_article(text, level=2):
+def rest_to_article(text, level=2, id_prefix='id'):
     """Convert ReST ``text`` to HTML article."""
     return docutils.core.publish_parts(
         source=text, writer=Writer(),
-        settings_overrides={'initial_header_level': level})
+        settings_overrides={
+            'initial_header_level': level,
+            'id_prefix': id_prefix})

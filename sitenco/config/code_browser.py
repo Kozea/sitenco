@@ -5,8 +5,9 @@ Code browser tools.
 
 import abc
 from docutils import nodes
+from flask import request
 
-from .tool import Tool, Role
+from .tool import Tool, Role, Directive
 
 
 class CodeBrowser(Tool):
@@ -57,3 +58,16 @@ class CodeLink(Role):
     def run(self, name, rawtext, text, lineno, inliner, options=None,
             content=None):
         return [nodes.reference('', text, refuri=self.tool.code_link)], []
+
+
+class Editable(Directive):
+    """Add a link to page source."""
+    def run(self):
+        # TODO: fix the link for code browsers other than GitHub
+        content = (
+            '<aside class="editable">'
+            '<a id="editable" title="Edit this page" href="%s">'
+            'Edit this page</a></aside>' % (
+                self.tool.code_link + '/tree/website/pages/' +
+                request.path.strip('/') + '.rst'))
+        return [nodes.raw('', content, format='html')]

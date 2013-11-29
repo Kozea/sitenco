@@ -117,8 +117,7 @@ def rss():
     channel = ET.Element('channel')
     tree.append(channel)
     title = ET.Element('title')
-    title.text = '%s - %s' % (
-        g.variables['name'], g.variables['description'])
+    title.text = '%s - %s' % (g.variables['name'], g.variables['description'])
     channel.append(title)
     description = ET.Element('description')
     description.text = u'News from %s' % g.variables['name']
@@ -140,8 +139,7 @@ def rss():
         item.append(guid)
         pubdate = ET.Element('pubDate')
         pubdate.text = datetime.strptime(
-            date, '%Y-%m-%d@%H:%M:%S').strftime(
-                '%a, %d %b %Y %H:%M:%S +0000')
+            date, '%Y-%m-%d@%H:%M:%S').strftime('%a, %d %b %Y %H:%M:%S +0000')
         item.append(pubdate)
         link = ET.Element('link')
         link.text = url
@@ -169,10 +167,11 @@ def news():
     """News."""
     g.variables.update({
         'page_title': 'News',
-        'news': ({'datetime': os.path.basename(new),
-                  'html': rest_to_article(
-                      _open_or_404(new), level=3)['article'].decode('utf-8')}
-                 for new in _list_news())})
+        'news': ({
+            'datetime': os.path.basename(new),
+            'html': rest_to_article(
+                _open_or_404(new), level=3, id_prefix=os.path.basename(new))
+            ['article']} for new in _list_news())})
     return render_template('news.html.jinja2', **g.variables)
 
 
@@ -221,7 +220,5 @@ def default(page='home'):
     if redirect_url:
         return redirect(redirect_url)
     item = rest_to_article(_open_or_404('pages', page))
-    g.variables.update({
-        'page': item['article'].decode('utf-8'),
-        'page_title': item['title']})
+    g.variables.update({'page': item['article'], 'page_title': item['title']})
     return render_template('page.html.jinja2', pagename=page, **g.variables)
