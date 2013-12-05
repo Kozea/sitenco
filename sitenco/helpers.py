@@ -119,9 +119,19 @@ class Pygal(Directive):
     has_content = True
 
     def run(self):
-        width, height = map(int, self.arguments) if len(
-            self.arguments) == 2 else (600, 400)
-        code = '\n'.join(self.content)
+        width, height = map(int, self.arguments[:2]) if len(
+            self.arguments) >= 2 else (600, 400)
+        if len(self.arguments) == 1:
+            self.render_fix = bool(self.arguments[0])
+        elif len(self.arguments) == 3:
+            self.render_fix = bool(self.arguments[2])
+        else:
+            self.render_fix = False
+        self.content = list(self.content)
+        content = list(self.content)
+        if self.render_fix:
+            content[-1] = 'rv = ' + content[-1]
+        code = '\n'.join(content)
         locals = {'pygal': pygal}
         try:
             exec(code, {}, locals)
@@ -130,19 +140,25 @@ class Pygal(Directive):
                 'An exception as occured during code parsing:'
                 ' \n %s' % format_exc(),
                 level=3)]
-        chart = None
-        for value in locals.values():
-            if isinstance(value, pygal.ghost.Ghost):
-                chart = value
-                break
-        if chart is None:
-            return [docutils.nodes.system_message(
-                'No instance of graph found', level=3)]
-        chart.config.width = width
-        chart.config.height = height
-        chart.explicit_size = True
+        if self.render_fix:
+            rv = locals['rv']
+        else:
+            chart = None
+            for key, value in locals.items():
+                if isinstance(value, pygal.ghost.Ghost):
+                    chart = value
+                    self.content.append(key + '.render()')
+                    break
+            if chart is None:
+                return [docutils.nodes.system_message(
+                    'No instance of graph found', level=3)]
+            chart.config.width = width
+            chart.config.height = height
+            chart.explicit_size = True
+            rv = chart.render()
+
         try:
-            svg = (chart.render()
+            svg = (rv
                    .encode('base64').replace('\n', ''))
             svg = (
                 '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
@@ -176,6 +192,7 @@ directives.register_directive('pyexec', PyResult)
 directives.register_directive('werkzeugurl', UrlGet)
 directives.register_directive('pygal', Pygal)
 directives.register_directive('pygal-code', PygalWithCode)
+directives.register_directive('pygal-sparkline', PygalWithCode)
 
 
 def rest_to_article(text, level=2, id_prefix='id'):
