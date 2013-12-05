@@ -61,7 +61,7 @@ class InlinePygments(Directive):
     def run(self):
         lexer = get_lexer_by_name(self.arguments[0]
                                   if len(self.arguments) == 1 else 'python')
-        code = u'\n'.join(self.content)
+        code = '\n'.join(self.content)
         formatter = HtmlFormatter(
             noclasses=True, nobackground=True, style=PygmentsStyle)
         parsed = pygments.highlight(code, lexer, formatter)
@@ -156,12 +156,12 @@ class Pygal(Directive):
             chart.config.width = width
             chart.config.height = height
             chart.explicit_size = True
-            rv = chart.render()
 
         try:
             svg = (
-                '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
-            ) % base64.b64encode(rv).decode('utf-8').replace('\n', '')
+                '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />' %
+                base64.b64encode(chart.render()).decode('utf-8')
+                .replace('\n', ''))
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
@@ -176,7 +176,7 @@ class PygalWithCode(Pygal):
     def run(self):
         node_list = super(PygalWithCode, self).run()
         lexer = get_lexer_by_name('python')
-        code = u'\n'.join(self.content)
+        code = '\n'.join(self.content)
         formatter = HtmlFormatter(
             noclasses=True, nobackground=True, style=PygmentsStyle)
         parsed = pygments.highlight(code, lexer, formatter)
