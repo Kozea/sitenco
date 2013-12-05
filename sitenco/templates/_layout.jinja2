@@ -27,7 +27,7 @@
     <nav>
       {% for item in menu recursive %}
         {% if loop.first %}<ul>{% endif %}
-          {% set name, element = item.items()[0] %}
+          {% set ((name, element),) = item.items() %}
           {% set active = element.link != request.path %}
           <li>
             <a{% if active %} href="{{ element.link }}"{% endif %}>{{ name }}</a>
@@ -42,7 +42,7 @@
     <footer>
       <ul>
         {% for item in footer %}
-          {% set name, element = item.items()[0] %}
+          {% set ((name, element),) = item.items() %}
           <li><a href="{{ element.link }}">
             {%- if element.image|d -%}
                 <img src="{{ element.image }}" alt="{{ name

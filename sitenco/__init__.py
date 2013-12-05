@@ -83,7 +83,8 @@ def _list_news():
     if not os.path.isdir(folder):
         raise NotFound
     for user in os.listdir(folder):
-        for filename in os.listdir(os.path.join(folder, user)):
+        news = sorted(os.listdir(os.path.join(folder, user)), reverse=True)
+        for filename in news:
             yield os.path.join(folder, user, os.path.splitext(filename)[0])
 
 
@@ -156,7 +157,7 @@ def rss():
         item.append(description)
 
     return Response(
-        '<?xml version="1.0" encoding="UTF-8" ?>\n' +
+        b'<?xml version="1.0" encoding="UTF-8" ?>\n' +
         ET.tostring(tree, 'utf-8', method='xml'),
         mimetype='application/rss+xml')
 
@@ -220,6 +221,5 @@ def default(page='home'):
     if redirect_url:
         return redirect(redirect_url)
     item = rest_to_article(_open_or_404('pages', page))
-    g.variables.update(
-        {'page': item['article'].decode('utf-8'), 'page_title': item['title']})
+    g.variables.update({'page': item['article'], 'page_title': item['title']})
     return render_template('page.html.jinja2', pagename=page, **g.variables)

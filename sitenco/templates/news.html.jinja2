@@ -2,7 +2,7 @@
 
 {% block content %}
   <a id="rss" href="/rss" title="RSS Feed">RSS Feed</a>
-  {% for item in news | sort(True) %}
+  {% for item in news %}
     <section id="{{ item.datetime }}">
       <h2>
         <time datetime="{{ item.datetime | pretty_datetime("_iso_") }}">
