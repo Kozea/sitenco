@@ -16,6 +16,7 @@ import subprocess
 from docutils_html5 import Writer
 from flask import g
 from traceback import format_exc
+import base64
 import pygal
 
 ROOT = os.path.join(os.path.dirname(__file__), '..', 'projects')
@@ -87,7 +88,7 @@ class UrlGet(Directive):
         content = content.replace(
             '<html', '<html style="background-color: white"')
         content = '<iframe src="data:text/html;base64,%s">' \
-            'Request Output</iframe>' % content.encode('base64')
+            'Request Output</iframe>' % base64.b64encode(content)
         # Remove EOLs
         content = content.replace('\n', '')
         return [docutils.nodes.raw('', content, format='html')]
@@ -158,11 +159,9 @@ class Pygal(Directive):
             rv = chart.render()
 
         try:
-            svg = (rv
-                   .encode('base64').replace('\n', ''))
             svg = (
                 '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
-            ) % svg
+            ) % base64.b64encode(rv).replace('\n', '')
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
