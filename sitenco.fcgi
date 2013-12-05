@@ -4,7 +4,7 @@ FCGI Script for Launching Site'n'Co
 
 """
 
-from flup.server.fcgi import WSGIServer
+from flipflop import WSGIServer
 import logging
 
 import sitenco
