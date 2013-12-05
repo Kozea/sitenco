@@ -161,7 +161,7 @@ class Pygal(Directive):
         try:
             svg = (
                 '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />'
-            ) % base64.b64encode(rv).replace('\n', '')
+            ) % base64.b64encode(rv).decode('utf-8').replace('\n', '')
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during graph generation:'
