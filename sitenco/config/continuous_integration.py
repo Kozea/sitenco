@@ -4,7 +4,7 @@ Continuous integration tools.
 """
 
 import abc
-import urllib
+import urllib.request
 
 from .tool import Tool
 
@@ -28,4 +28,4 @@ class Jenkins(ContinuousIntegration):
         """Update the continuous integration tool."""
         build_url = '%sjob/%s/build?delay=0sec' % (
             self.base_url, self.project_name)
-        urllib.urlopen(build_url)
+        urllib.request.urlopen(build_url)
