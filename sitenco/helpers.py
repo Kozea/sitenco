@@ -133,19 +133,19 @@ class Pygal(Directive):
         if self.render_fix:
             content[-1] = 'rv = ' + content[-1]
         code = '\n'.join(content)
-        locals = {'pygal': pygal}
+        scope = {'pygal': pygal}
         try:
-            exec(code, {}, locals)
+            exec(code, scope)
         except Exception:
             return [docutils.nodes.system_message(
                 'An exception as occured during code parsing:'
                 ' \n %s' % format_exc(),
                 level=3)]
         if self.render_fix:
-            rv = locals['rv']
+            rv = scope['rv']
         else:
             chart = None
-            for key, value in locals.items():
+            for key, value in scope.items():
                 if isinstance(value, pygal.ghost.Ghost):
                     chart = value
                     self.content.append(key + '.render()')
