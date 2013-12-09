@@ -156,11 +156,12 @@ class Pygal(Directive):
             chart.config.width = width
             chart.config.height = height
             chart.explicit_size = True
+            rv = chart.render()
 
         try:
             svg = (
                 '<embed src="data:image/svg+xml;charset=utf-8;base64,%s" />' %
-                base64.b64encode(chart.render()).decode('utf-8')
+                base64.b64encode(rv).decode('utf-8')
                 .replace('\n', ''))
         except Exception:
             return [docutils.nodes.system_message(
