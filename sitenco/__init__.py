@@ -82,10 +82,14 @@ def _list_news():
     folder = os.path.join(PATH, g.project_name, "news")
     if not os.path.isdir(folder):
         raise NotFound
+    filenames = {}
     for user in os.listdir(folder):
-        news = sorted(os.listdir(os.path.join(folder, user)), reverse=True)
+        news = os.listdir(os.path.join(folder, user))
         for filename in news:
-            yield os.path.join(folder, user, os.path.splitext(filename)[0])
+            filenames[filename] = os.path.join(
+                folder, user, os.path.splitext(filename)[0])
+    for key in sorted(filenames, reverse=True):
+        yield filenames[key]
 
 
 @app.template_filter()
