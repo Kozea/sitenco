@@ -62,7 +62,7 @@ class Config(object):
                     cls = getattr(tool_module, class_name)
                     if isinstance(cls, type):
                         if issubclass(cls, tool.Directive) and \
-                               cls != tool.Directive:
+                                cls != tool.Directive:
                             directives.register_directive(
                                 class_name.lower(), cls)
                         elif issubclass(cls, tool.Role) and cls != tool.Role:
@@ -78,7 +78,7 @@ class Config(object):
                 node = node.get(folder)
                 if folders:
                     value = self.get(folders, node)
-                    if value != None:
+                    if value is not None:
                         return value
                 else:
                     return node

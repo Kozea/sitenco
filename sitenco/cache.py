@@ -2,8 +2,8 @@
 Cache mechanisms.
 
 """
+
 from flask import g, current_app
-from werkzeug.wrappers import BaseResponse
 
 
 CACHE = {}
