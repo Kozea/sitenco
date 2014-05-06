@@ -5,12 +5,14 @@ FCGI Script for Launching Site'n'Co
 """
 
 from flipflop import WSGIServer
-import logging
+from logging import FileHandler
+from logging.handlers import SMTPHandler
+
 
 import sitenco
 
-log_handler = logging.FileHandler('/var/log/sitenco')
-mail_handler = logging.SMTPHandler(
+log_handler = FileHandler('/var/log/sitenco')
+mail_handler = SMTPHandler(
     'mail.keleos.fr', 'sitenco@kozea.fr', ['sitenco@kozea.fr'],
     'Error in Site’n’co')
 sitenco.app.logger.addHandler(log_handler)
