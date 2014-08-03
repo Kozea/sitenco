@@ -1,0 +1,45 @@
+name: MyProject
+description: What a cool project
+license: BSD
+url: http://www.myproject.org/
+
+menu:
+  - Overview:
+      link: /
+  - News:
+      link: /news/
+  - Documentation:
+      link: /docs/
+
+footer:
+  - Created by Site'n'co:
+      link: http://www.kozea.fr/
+  - Optimized for Standards:
+      link: http://validator.w3.org/check?uri=referer
+
+redirects:
+    /install/: /docs/install/
+    /using/: /docs/tutorial/
+
+project (git):
+  url: git://github.com/xx/xx.git
+  path: xx
+
+sphinx (git):
+  url: git://github.com/xx/xx.git
+  path: xx
+
+vcs (git):
+  url: git://github.com/xx/xx.git
+  path: /var/db/git/xx.git
+
+code browser (github):
+  project name: xx/xx
+  ribbon: Fork me on GitHub
+
+bug tracker (github):
+  project name: xx/xx
+
+continuous integration (jenkins):
+  base url: http://jenkins.xx.org/
+  project name: xx
