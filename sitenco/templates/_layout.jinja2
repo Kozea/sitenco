@@ -2,21 +2,20 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="UTF-8"/>
-    <title>{{ name }} - {{ description }} {%- if page_title|d %} - {{ page_title }}{% endif %}</title>
+    <title>{{ name }} - {{ description }}{%- if page_title|d %} - {{ page_title }}{% endif %}</title>
     <link href="/css/shared.css" type="text/css" rel="stylesheet" />
     <link href="/css/style.css" type="text/css" rel="stylesheet" />
     <link href="/css/img/icon.png" type="image/png" rel="shortcut icon" />
     <link href="/rss" type="application/rss+xml" rel="alternate" title="{{ title }} RSS 2.0" />
-    <script src="/js/prefixfree.min.js"></script>
-    <script type="text/javascript">
-      (function() {
-      var d=document,t='script',p=d.createElement(t),s=d.getElementsByTagName(t)[0];
-      p.type='text/javascript';p.async=true;p.src="http://kozea.pystil.org/pystil.js";s.parentNode.insertBefore(p,s);
-      })();
-    </script>
-    <!--[if lt IE 9]>
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+    <script src="https://raw.githubusercontent.com/LeaVerou/prefixfree/gh-pages/prefixfree.min.js"></script>
+    {% if pystil %}
+      <script type="text/javascript">
+        (function() {
+        var d=document,t='script',p=d.createElement(t),s=d.getElementsByTagName(t)[0];
+        p.type='text/javascript';p.async=true;p.src="{{ pystil }}";s.parentNode.insertBefore(p,s);
+        })();
+      </script>
+    {% endif %}
   </head>
 
   <body>
@@ -43,24 +42,20 @@
       <ul>
         {% for item in footer %}
           {% set ((name, element),) = item.items() %}
-          <li><a href="{{ element.link }}">
-            {%- if element.image|d -%}
-                <img src="{{ element.image }}" alt="{{ name
-                    }}" title="{{ name }}">
-            {%- else -%}
-                {{ name }}
-            {%- endif -%}
-            </a></li>
-        {% else %}
-          <li><a href="http://community.kozea.org/">A Kozea Project</a></li>
-          <li><a href="http://validator.w3.org/check?uri=referer">Optimized for Standards</a></li>
+          <li>
+            {% if element.link %}
+              <a href="{{ element.link }}">{{ name }}</a>
+            {% else %}
+              {{ name }}
+            {% endif %}
+          </li>
         {% endfor %}
       </ul>
     </footer>
 
-    {% if ribbon %}
-      <aside class="ribbon">
-        <a href="{{ ribbon.url }}">Fork me on GitHub</a>
+    {% if code_browser and code_browser.ribbon %}
+      <aside id="ribbon">
+        <a href="{{ g.config.tools.code_browser.code_link }}">{{ code_browser.ribbon }}</a>
       </aside>
     {% endif %}
 

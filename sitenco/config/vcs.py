@@ -4,7 +4,6 @@ Version control management tools.
 """
 
 import abc
-import brigit
 from docutils import nodes
 from docutils.parsers.rst import directives
 
@@ -30,6 +29,7 @@ class VCS(Tool):
 class Git(VCS):
     """Git tool."""
     def __init__(self, path, branch='master', url=None):
+        import brigit
         super(Git, self).__init__(path, branch, url)
         self._repository = brigit.Git(path, remote=self.url)
 

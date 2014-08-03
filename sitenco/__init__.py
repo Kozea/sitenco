@@ -1,6 +1,3 @@
-# coding: utf8
-# pylint: disable=C0103
-
 """
 Site'N'Co
 =========
@@ -14,6 +11,7 @@ import docutils.core
 import docutils.writers.html4css1
 import xml.etree.ElementTree as ET
 from datetime import datetime
+from docutils_html5 import Writer
 from werkzeug.exceptions import NotFound
 from flask import (
     Flask, Response, g, render_template, request, send_from_directory,
@@ -25,9 +23,9 @@ SITE_ROOT = os.path.dirname(os.path.abspath(__file__))
 PATH = os.path.join(SITE_ROOT, '..', 'projects')
 DOCS_PATH = os.path.join(SITE_ROOT, '..', 'docs')
 
+from . import directives
 from .cache import cache, clean_cache
 from .config import Config, TOOLS
-from .helpers import rest_to_article
 
 
 class ConfigRepository(object):
@@ -90,6 +88,15 @@ def _list_news():
                 folder, user, os.path.splitext(filename)[0])
     for key in sorted(filenames, reverse=True):
         yield filenames[key]
+
+
+def _rest_to_article(text, level=2, id_prefix='id'):
+    """Convert ReST ``text`` to HTML article."""
+    return docutils.core.publish_parts(
+        source=text, writer=Writer(),
+        settings_overrides={
+            'initial_header_level': level,
+            'id_prefix': id_prefix})
 
 
 @app.template_filter()
@@ -174,7 +181,7 @@ def news():
         'page_title': 'News',
         'news': ({
             'datetime': os.path.basename(new),
-            'html': rest_to_article(
+            'html': _rest_to_article(
                 _open_or_404(new), level=3, id_prefix=os.path.basename(new))
             ['article']} for new in _list_news())})
     return render_template('news.html.jinja2', **g.variables)
@@ -224,6 +231,6 @@ def default(page='home'):
     redirect_url = g.variables.get('redirects', {}).get(request.path)
     if redirect_url:
         return redirect(redirect_url)
-    item = rest_to_article(_open_or_404('pages', page))
+    item = _rest_to_article(_open_or_404('pages', page))
     g.variables.update({'page': item['article'], 'page_title': item['title']})
     return render_template('page.html.jinja2', pagename=page, **g.variables)

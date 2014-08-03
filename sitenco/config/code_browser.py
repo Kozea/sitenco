@@ -14,8 +14,9 @@ class CodeBrowser(Tool):
     """Abstract class for code browser tools."""
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, project_name):
+    def __init__(self, project_name, ribbon=None):
         self.project_name = project_name
+        self.ribbon = ribbon
         super(CodeBrowser, self).__init__()
 
     def update(self):
@@ -33,17 +34,17 @@ class CodeBrowser(Tool):
 
 
 class Github(CodeBrowser):
-    """Github code browser tool."""
+    """GitHub code browser tool."""
     base_url = 'https://github.com/'
 
 
 class Gitorious(CodeBrowser):
-    """Github code browser tool."""
+    """Gitorious code browser tool."""
     base_url = 'https://gitorious.org/'
 
 
 class Redmine(CodeBrowser):
-    """Github code browser tool."""
+    """Redmine code browser tool."""
     def __init__(self, project_name, base_url):
         super(Redmine, self).__init__(project_name)
         self._base_url = base_url

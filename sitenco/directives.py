@@ -1,5 +1,5 @@
 """
-Various Helpers
+ReST directives.
 
 """
 
@@ -8,18 +8,13 @@ from docutils.parsers.rst import directives, Directive
 
 import os
 import pygments
+import base64
+import pygal
 from pygments.lexers import get_lexer_by_name
 from pygments.formatters import HtmlFormatter
 from pygments.style import Style
 from pygments.token import Keyword, Name, Comment, String, Error, Number
-import subprocess
-from docutils_html5 import Writer
-from flask import g
 from traceback import format_exc
-import base64
-import pygal
-
-ROOT = os.path.join(os.path.dirname(__file__), '..', 'projects')
 
 
 class PygmentsStyle(Style):
@@ -33,24 +28,6 @@ class PygmentsStyle(Style):
         Number: '#859900'}
 
 
-class Pygments(Directive):
-    """Code syntax hightlighting."""
-    required_arguments = 1
-    optional_arguments = 1
-    final_argument_whitespace = True
-    has_content = False
-
-    def run(self):
-        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
-        lexer_name = self.arguments[1] if len(self.arguments) > 1 else 'python'
-        code = open(filename).read()
-        lexer = get_lexer_by_name(lexer_name)
-        formatter = HtmlFormatter(
-            noclasses=True, nobackground=True, style=PygmentsStyle)
-        parsed = pygments.highlight(code, lexer, formatter)
-        return [docutils.nodes.raw('', parsed, format='html')]
-
-
 class InlinePygments(Directive):
     """Inline code sytax highlighting."""
     required_arguments = 0
@@ -59,57 +36,13 @@ class InlinePygments(Directive):
     has_content = True
 
     def run(self):
-        lexer = get_lexer_by_name(self.arguments[0]
-                                  if len(self.arguments) == 1 else 'python')
+        lexer = get_lexer_by_name(
+            self.arguments[0] if len(self.arguments) == 1 else 'python')
         code = '\n'.join(self.content)
         formatter = HtmlFormatter(
             noclasses=True, nobackground=True, style=PygmentsStyle)
         parsed = pygments.highlight(code, lexer, formatter)
         return [docutils.nodes.raw('', parsed, format='html')]
-
-
-class UrlGet(Directive):
-    """Serve the response of a request."""
-    required_arguments = 2
-    optional_arguments = 0
-    has_content = False
-
-    def run(self):
-        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
-        url = self.arguments[1]
-        parts = filename.split('/')
-        cwd = '/'.join(parts[:-1])
-        pipe = subprocess.Popen(
-            ['python', filename, url], cwd=cwd, stdout=subprocess.PIPE)
-        content = pipe.communicate()[0].strip()
-        retcode = pipe.poll()
-        if retcode:
-            content = 'An error occured %s' % '-'.join([filename, url])
-        content = content.replace(
-            '<html', '<html style="background-color: white"')
-        content = '<iframe src="data:text/html;base64,%s">' \
-            'Request Output</iframe>' % base64.b64encode(content)
-        # Remove EOLs
-        content = content.replace('\n', '')
-        return [docutils.nodes.raw('', content, format='html')]
-
-
-class PyResult(Directive):
-    """Execute the given python file and puts its result in the document."""
-    required_arguments = 1
-    optional_arguments = 0
-    final_argument_whitespace = True
-    has_content = False
-
-    def run(self):
-        filename = os.path.join(ROOT, g.project_name, self.arguments[0])
-        pipe = subprocess.Popen(['python', filename], stdout=subprocess.PIPE)
-        content = pipe.communicate()[0]
-        retcode = pipe.poll()
-        if retcode:
-            content = 'An error occured'
-        content = '<pre class="script-output">%s</pre>' % content
-        return [docutils.nodes.raw('', content, format='html')]
 
 
 class Pygal(Directive):
@@ -186,19 +119,8 @@ class PygalWithCode(Pygal):
                 '', '', docutils.nodes.raw('', parsed, format='html')))
         return [docutils.nodes.figure('', *node_list)]
 
-directives.register_directive('pycode', Pygments)
+
 directives.register_directive('code-block', InlinePygments)
-directives.register_directive('pyexec', PyResult)
-directives.register_directive('werkzeugurl', UrlGet)
 directives.register_directive('pygal', Pygal)
 directives.register_directive('pygal-code', PygalWithCode)
-directives.register_directive('pygal-sparkline', PygalWithCode)
 
-
-def rest_to_article(text, level=2, id_prefix='id'):
-    """Convert ReST ``text`` to HTML article."""
-    return docutils.core.publish_parts(
-        source=text, writer=Writer(),
-        settings_overrides={
-            'initial_header_level': level,
-            'id_prefix': id_prefix})
