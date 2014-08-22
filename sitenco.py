@@ -10,6 +10,8 @@ except ImportError:
 else:
     wdb.ext.add_w_builtin()
 
+app = sitenco.app
+
 
 if __name__ == '__main__':
     arg_parser = argparse.ArgumentParser()
@@ -25,8 +27,8 @@ if __name__ == '__main__':
     except ImportError:
         pass
     else:
-        sitenco.app.wsgi_app = wdb.ext.WdbMiddleware(
-            sitenco.app.wsgi_app, start_disabled=True)
+        app.wsgi_app = wdb.ext.WdbMiddleware(
+            app.wsgi_app, start_disabled=True)
     if not args.cache:
         sitenco.cache.set_cache = lambda cache, key, value: None
-    sitenco.app.run(host='0.0.0.0', debug=True, port=args.port)
+    app.run(host='0.0.0.0', debug=True, port=args.port)
