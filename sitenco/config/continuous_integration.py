@@ -28,4 +28,4 @@ class Jenkins(ContinuousIntegration):
         """Update the continuous integration tool."""
         build_url = '%sjob/%s/build?delay=0sec' % (
             self.base_url, self.project_name)
-        urllib.request.urlopen(build_url)
+        urllib.request.urlopen(build_url, data=b'')
