@@ -27,5 +27,5 @@ class Git(Sphinx, vcs.Git):
         self._repository.fetch()
         self._repository.reset('--hard', 'origin/' + self.branch)
         subprocess.check_call(
-            [sys.executable, 'setup.py', 'build_sphinx', '-b', 'dirhtml'],
+            ['python3', 'setup.py', 'build_sphinx', '-b', 'dirhtml'],
             cwd=self.path)
